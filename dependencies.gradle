@@ -35,5 +35,6 @@ ext{
             coroutineCore     : "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}",
             coroutineAndroid  : "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}",
             kotlinReflect     : "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlinReflect}",
+            coil     : "io.coil-kt:coil-compose:${versions.coil}"
     ]
 }

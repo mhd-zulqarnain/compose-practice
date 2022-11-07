@@ -1,5 +1,6 @@
 package com.project.tailor.api
 
+import com.project.tailor.model.Products
 import com.project.tailor.model.UserDetails
 import retrofit2.Response
 import retrofit2.http.GET
@@ -12,6 +13,9 @@ interface FlexApi {
     @GET(URL_USER_DETAILS)
     suspend fun getUserDetails(
     ): Response<UserDetails>
+
+    @GET(URL_PRODUCTS)
+    suspend fun getProducts(): Response<Products>
 
 
 }

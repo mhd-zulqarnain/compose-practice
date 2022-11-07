@@ -53,6 +53,7 @@ buildscript {
             'playServicesAds'   : '16.0.0',
             'facebook'          : '5.11.0',
             'google'            : '20.2.0',
+            'coil'              : '1.3.1',
 
     ]
     repositories {
