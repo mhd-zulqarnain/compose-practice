@@ -1,6 +1,9 @@
 package com.project.tailor
 
+import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
+import android.widget.ProgressBar
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -12,13 +15,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color.Companion.Magenta
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.project.tailor.model.Product
@@ -39,16 +46,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val productUIState by viewModel.productResult.collectAsState()
-                    LaunchedEffect(Unit) {
-                        when(productUIState) {
-                            is ProfileViewModel.ProductResult.ProductList->{
-//                                ProductList(productUIState.list)
-                            }
-                            // Same as in the question
-                        }
-                    }
-
-//                    Greeting("Android")
+                    ProductList(productUIState = productUIState, this@MainActivity)
                 }
             }
         }
@@ -56,15 +54,34 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ProductList(list: List<Product>) {
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        items(list) { product ->
-            ProductCard(product)
+fun ProductList(productUIState: ProfileViewModel.ProductResult, context: Context) {
+    when (productUIState) {
+        is ProfileViewModel.ProductResult.ProductList -> {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(productUIState.list) { product ->
+                    ProductCard(product)
+                }
+            }
+        }
+        is ProfileViewModel.ProductResult.Error -> {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = productUIState.error,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
+        }
+        is ProfileViewModel.ProductResult.Loading -> {
+//            todo : progress bar handling
+//            CircularProgressIndicator(
+//                context
+//            )
         }
     }
+
 }
 
 @Composable

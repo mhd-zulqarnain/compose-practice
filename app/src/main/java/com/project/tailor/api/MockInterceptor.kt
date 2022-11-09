@@ -16,7 +16,7 @@ class MockInterceptor : Interceptor {
             val responseString = when {
              uri.contains(URL_LOGIN) -> loginSuccess
              uri.contains(URL_SIGNUP) -> signUpSuccess
-             uri.contains(URL_PRODUCTS) -> products
+             uri.contains(URL_PRODUCTS) -> signUpSuccessAlreadyExists
                  else -> ""
             }
 
