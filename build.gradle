@@ -2,6 +2,7 @@ buildscript {
     ext.kotlin_version = '1.5.30'
     ext.hilt_version = '2.38.1'
     ext.hilt_jetpack_version = '1.0.0'
+    ext.room_version = '2.4.2'
     ext {
         compose_version = '1.1.1'
     }
@@ -54,6 +55,10 @@ buildscript {
             'facebook'          : '5.11.0',
             'google'            : '20.2.0',
             'coil'              : '1.3.1',
+            'room'              : '2.4.2',
+            'material3'         : '1.0.0-alpha02',
+            'compose'           : '1.1.1',
+            'securityCrypto'    : '1.1.0-alpha02'
 
     ]
     repositories {
