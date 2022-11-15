@@ -19,7 +19,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ProductsDataSource @Inject constructor(
+class ProductsRemoteDataSource @Inject constructor(
     @ApplicationContext
     private val context: Context,
     private val networkHandler: NetworkHandler,

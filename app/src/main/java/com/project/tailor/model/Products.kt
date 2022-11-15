@@ -1,17 +1,21 @@
 package com.project.tailor.model
 
+import androidx.annotation.NonNull
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 
 data class Products(
-
     @SerializedName("products") var products: ArrayList<Product> = arrayListOf()
-
 )
 
+@Entity
 data class Product(
-
-    @SerializedName("id") var id: Int? = null,
+    @PrimaryKey
+    @NonNull
+    @SerializedName("id")
+    var id: Int? = null,
     @SerializedName("title") var title: String? = null,
     @SerializedName("description") var description: String? = null,
     @SerializedName("price") var price: Int? = null,
@@ -21,6 +25,6 @@ data class Product(
     @SerializedName("brand") var brand: String? = null,
     @SerializedName("category") var category: String? = null,
     @SerializedName("thumbnail") var thumbnail: String? = null,
-    @SerializedName("images") var images: ArrayList<String> = arrayListOf()
+    @SerializedName("images") var images: List<String> = arrayListOf()
 
 )

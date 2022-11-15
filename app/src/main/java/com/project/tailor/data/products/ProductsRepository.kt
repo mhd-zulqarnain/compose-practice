@@ -9,24 +9,31 @@ import javax.inject.Singleton
 
 @Singleton
 class ProductsRepository @Inject constructor(
-    private val dataSource: ProductsDataSource
+    private val dataSource: ProductsRemoteDataSource,
+    private val localDataSource: ProductLocalDataSource
 ) {
 
-     fun getProducts(): Flow<Result<List<Product>>> = flow {
+    fun getProducts(): Flow<Result<List<Product>>> = flow {
         try {
-            when (val result = dataSource.getProducts()) {
-                is Result.Success -> {
-                    val data = result.data.products
-                    emit(Result.Success(data))
+            val list = localDataSource.getAll()
+            if (list.isEmpty().not())
+                emit(Result.Success(list))
+            else
+                when (val result = dataSource.getProducts()) {
+                    is Result.Success -> {
+                        val data = result.data.products
+                        localDataSource.insertProductList(data).run {
+                            emit(Result.Success(data))
+                        }
+                    }
+                    is Result.Error -> {
+                        val data = result.exception
+                        emit(Result.Error(data))
+                    }
+                    else -> {
+                        //not implemented
+                    }
                 }
-                is Result.Error -> {
-                    val data = result.exception
-                    emit(Result.Error(data))
-                }
-                else -> {
-                    //not implemented
-                }
-            }
         } catch (e: Exception) {
             emit(Result.Error(e))
         }

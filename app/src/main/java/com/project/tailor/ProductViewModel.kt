@@ -41,7 +41,7 @@ class ProfileViewModel @Inject constructor(
                             ProductResult.Error(result.exception.message.orEmpty())
                     }
                 }
-            }.launchIn(viewModelScope)
+            }.collect()
         }
 
     }
