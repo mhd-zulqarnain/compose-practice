@@ -15,6 +15,7 @@ class ProductsRepository @Inject constructor(
 
     fun getProducts(): Flow<Result<List<Product>>> = flow {
         try {
+            emit(Result.Loading)
             val list = localDataSource.getAll()
             if (list.isEmpty().not())
                 emit(Result.Success(list))
@@ -30,9 +31,11 @@ class ProductsRepository @Inject constructor(
                         val data = result.exception
                         emit(Result.Error(data))
                     }
-                    else -> {
-                        //not implemented
+                    is Result.Loading -> {
+                        emit(Result.Loading)
+
                     }
+
                 }
         } catch (e: Exception) {
             emit(Result.Error(e))

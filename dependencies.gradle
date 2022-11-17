@@ -15,7 +15,7 @@ ext {
             navFragmentKtx     : "androidx.navigation:navigation-fragment-ktx:${versions.navigation}",
             navUIKtx           : "androidx.navigation:navigation-ui-ktx:${versions.navigation}",
             kotlinJdk          : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version",
-            material           : "com.google.android.material:material:${versions.material}",
+            material           : "androidx.compose.material:material:${versions.material}",
             swipeRefreshLayout : "androidx.swiperefreshlayout:swiperefreshlayout:${versions.swipeRefreshLayout}",
             playServiceAuth    : "com.google.android.gms:play-services-auth:${versions.playServicesAuth}",
             hiltAndroid        : "com.google.dagger:hilt-android:$hilt_version",

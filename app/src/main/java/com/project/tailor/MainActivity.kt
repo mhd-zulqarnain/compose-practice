@@ -1,8 +1,9 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.project.tailor
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -12,19 +13,24 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.TextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
-import androidx.compose.ui.graphics.Color.Companion.Magenta
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.project.tailor.model.Product
@@ -34,19 +40,27 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: ProfileViewModel by viewModels()
+
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.getProducts()
         setContent {
             TailorTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
+
                 ) {
-                    val productUIState by viewModel.productResult.collectAsState()
-                    ProductList(productUIState = productUIState, this@MainActivity)
+                    Scaffold(
+                        topBar = {
+                        }
+                    ) {
+                        val productUIState by viewModel.productResult.collectAsState()
+                        ProductList(productUIState = productUIState, this@MainActivity)
+                    }
                 }
+
             }
         }
     }
@@ -69,10 +83,26 @@ fun ProductList(productUIState: ProfileViewModel.ProductResult, context: Context
             ErrorCard(productUIState.error)
         }
         is ProfileViewModel.ProductResult.Loading -> {
-//            todo : progress bar handling
-//            CircularProgressIndicator(
-//                context
-//            )
+            loader()
+        }
+    }
+
+}
+
+@Composable
+fun loader() {
+    Row(
+        modifier = Modifier
+            .wrapContentHeight()
+            .padding(40.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column(
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(40.dp)
+            )
         }
     }
 
@@ -81,7 +111,8 @@ fun ProductList(productUIState: ProfileViewModel.ProductResult, context: Context
 @Composable
 fun ErrorCard(error: String) {
     Row(
-        modifier = Modifier.wrapContentHeight()
+        modifier = Modifier
+            .wrapContentHeight()
             .padding(16.dp)
     ) {
         Column(
@@ -108,29 +139,52 @@ fun ProductCard(product: Product) {
             showDialog
         )
     }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable(onClick = {
-            showDialog.value = true
-//            Toast.makeText(context, product.title.orEmpty(), Toast.LENGTH_LONG).show()
-        })
+    Column(
+        Modifier.padding(8.dp)
     ) {
-        Image(
-            painter = rememberImagePainter(product.images[0]),
-            contentDescription = product.title,
-            modifier = Modifier
-                .size(100.dp)
-                .padding(10.dp),
-            contentScale = ContentScale.Crop
-        )
-        Column(
-            Modifier.padding(8.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable(onClick = {
+                showDialog.value = true
+            })
         ) {
-            Text(text = product.title.orEmpty())
-            Text(text = product.description.orEmpty())
+            Image(
+                painter = rememberImagePainter(product.images[0]),
+                contentDescription = product.title,
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(10.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                Modifier.padding(8.dp)
+            ) {
+                Text(text = product.title.orEmpty())
+                Text(text = product.description.orEmpty())
+            }
         }
-
+        //comment/like section
+        var text by rememberSaveable { mutableStateOf("") }
+        val keyboardController = LocalSoftwareKeyboardController.current
+        TextField(
+            value = text,
+            textStyle = TextStyle(fontStyle = FontStyle.Normal),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color.Gray, shape = RectangleShape),
+            onValueChange = {
+                text = it
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                text = ""
+                keyboardController?.hide()
+            }),
+            label = { Text("Enter your comment", color = Color.LightGray) })
     }
+
 }
 
 @Composable
