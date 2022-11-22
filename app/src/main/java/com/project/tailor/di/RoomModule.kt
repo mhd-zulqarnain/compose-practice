@@ -3,6 +3,7 @@ package com.project.tailor.di
 import android.content.Context
 import androidx.room.Room
 import com.project.tailor.room.AppDatabase
+import com.project.tailor.room.CommentDao
 import com.project.tailor.room.ProductDao
 import dagger.Module
 import dagger.Provides
@@ -25,5 +26,9 @@ class RoomModule {
     @Provides
     fun provideProductDao(appDatabase: AppDatabase): ProductDao {
         return appDatabase.productDao()
+    }
+    @Provides
+    fun provideCommentDao(appDatabase: AppDatabase): CommentDao {
+        return appDatabase.commentDao()
     }
 }

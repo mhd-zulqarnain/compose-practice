@@ -40,7 +40,8 @@ ext {
             material3          : "androidx.compose.material3:material3:${versions.material3}",
             composeUI          : "androidx.compose.ui:ui:${versions.compose}",
             composePreview     : "androidx.compose.ui:ui-tooling-preview:${versions.compose}",
-            composeActivity    : "androidx.activity:activity-compose:${versions.compose}"
+            composeActivity    : "androidx.activity:activity-compose:${versions.compose}",
+            stetho             : "com.facebook.stetho:stetho:${versions.stetho}"
     ]
     //Compiler dependencies
     kaptDependencies = [

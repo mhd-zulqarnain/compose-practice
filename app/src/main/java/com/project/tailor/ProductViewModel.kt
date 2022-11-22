@@ -6,9 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.project.tailor.api.Result
 import com.project.tailor.data.products.ProductsRepository
 import com.project.tailor.di.CoroutinesDispatcherProvider
+import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,7 +34,7 @@ class ProfileViewModel @Inject constructor(
                 val result = it ?: return@onEach
                 when (result) {
                     is Result.Success -> {
-                        Log.e("getProducts","Success ${result.data.size}")
+                        Log.e("getProducts", "Success ${result.data.size}")
                         _productResult.value = ProductResult.ProductList(result.data)
                     }
                     is Result.Loading -> {
@@ -46,11 +50,20 @@ class ProfileViewModel @Inject constructor(
 
     }
 
-//    fun logout() {
-//        loginRepository.logout()
-//    }
-//    fun getUserProfile()= loginRepository.user
+    fun addComment(comment: String, productId: Int?) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            productId?.let {
+                val tmp = Comment(productId = productId, comment = comment)
+                repository.addComment(tmp)
+                val comments = repository.getComments(productId)
+                Log.e("comments", "size :${comments.size}")
+            }
+        }
+    }
 
+    fun getComments(productId: Int): List<Comment> {
+        return repository.getComments(productId)
+    }
 
     sealed class ProductResult {
         data class ProductList(val list: List<Product>) : ProductResult()

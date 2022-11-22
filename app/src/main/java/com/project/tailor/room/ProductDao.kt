@@ -12,4 +12,8 @@ interface ProductDao {
 
     @Query("SELECT * FROM product")
     fun getAll(): List<Product>
+
+
+//    @Query("SELECT * FROM product JOIN Comment ON comment.productId = product.id")
+//    abstract fun getProductsWithComments(): List<Combined>
 }

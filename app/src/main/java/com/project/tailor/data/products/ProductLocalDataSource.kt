@@ -1,42 +1,44 @@
 package com.project.tailor.data.products
 
 
+import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
-
+import com.project.tailor.room.CommentDao
 import com.project.tailor.room.ProductDao
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ProductLocalDataSource @Inject constructor(
-    private val productDao: ProductDao
+        private val productDao: ProductDao,
+        private val commentDao: CommentDao
 ) {
-//    suspend fun getProducts(): Result<Products> {
-//        return when (networkHandler.isConnected) {
-//            true -> {
-//                safeApiCall(
-//                    call = {
-//                        callSampleApi()
-//                    },
-//                    errorMessage = context.getString(R.string.error_msg)
-//                )
-//            }
-//            false -> {
-//                Result.Error(IOException(context.getString(R.string.failure_network_connection)))
-//            }
-//        }
-//    }
-//    private suspend fun callSampleApi(
-//    ): Result<Products> {
-//        return flexApi.getProducts().processResponse()
-//    }
-
-    fun insertProductList(list:ArrayList<Product>){
+    fun insertProductList(list: ArrayList<Product>) {
         list.forEach {
             productDao.insertProduct(it)
         }
     }
-    fun getAll():List<Product>{
-           return productDao.getAll()
+
+    fun getAll(): List<Product> {
+        return productDao.getAll()
+    }
+
+//    fun getProductsWithComments(): List<Product> {
+//        val data = productDao.getProductsWithComments()
+//        val map: ArrayList<Product> = arrayListOf()
+//        data.forEach { combined ->
+//            map.add(combined.parent.copy(
+//                    commentsList = combined.comments,
+//            ))
+//        }
+//        return map
+//    }
+
+    fun addComment(comment: Comment) {
+        commentDao.insertComment(comment)
+    }
+
+    fun getComments(productId: Int): List<Comment> {
+        return commentDao.getAllComments(productId)
     }
 }

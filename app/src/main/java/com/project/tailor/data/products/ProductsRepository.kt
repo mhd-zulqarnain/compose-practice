@@ -1,6 +1,7 @@
 package com.project.tailor.data.products
 
 import com.project.tailor.api.Result
+import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -42,5 +43,12 @@ class ProductsRepository @Inject constructor(
         }
     }
 
+    fun addComment(comment: Comment) {
+        localDataSource.addComment(comment)
+    }
+
+    fun getComments(productId: Int): List<Comment> {
+        return localDataSource.getComments(productId)
+    }
 
 }
