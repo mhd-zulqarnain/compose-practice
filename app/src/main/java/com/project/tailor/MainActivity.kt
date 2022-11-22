@@ -69,7 +69,9 @@ class MainActivity : ComponentActivity() {
 //                    }
 //                }
                 Column {
-                    HomeSearch(searchInput = "", onSearchInputChanged = {})
+                    HomeSearch(searchInput = "", onSearchInputChanged = {
+                        viewModel.filterProducts(it)
+                    })
                     val productUIState by viewModel.productResult.collectAsState()
                     ProductList(productUIState = productUIState, this@MainActivity, viewModel)
                 }
@@ -146,13 +148,12 @@ fun ErrorCard(error: String) {
 
 @Composable
 fun HomeSearch(
-        modifier: Modifier? = null,
         searchInput: String = "",
         onSearchInputChanged: (String) -> Unit
 ) {
     Surface(shape = RoundedCornerShape(9.dp),
             border = BorderStroke(Dp.Hairline, androidx.compose.material.MaterialTheme.colors.onSurface.copy(alpha = .6f)),
-            shadowElevation = 4.dp,
+            shadowElevation = 2.dp,
             modifier = Modifier.fillMaxWidth()
     ) {
         Row(verticalAlignment = Alignment.CenterVertically,
@@ -162,13 +163,23 @@ fun HomeSearch(
                         imageVector = Icons.Filled.Search,
                         contentDescription = ""
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                val context = LocalContext.current
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            ProvideTextStyle(TextStyle(color = Color.White)) {
+                var text by rememberSaveable { mutableStateOf(searchInput) }
                 val keyboardController = LocalSoftwareKeyboardController.current
                 TextField(
-                        value = searchInput,
-                        onValueChange = { onSearchInputChanged(it) },
+                        value = text,
+                        textStyle = TextStyle(color = Color.White),
+                        maxLines = 1,
+                        onValueChange = {
+                            if (it.length <= 10) {
+                                text = it
+                                onSearchInputChanged(it)
+                            }
+                        },
                         placeholder = { Text(text = "Search the products") },
+
                         colors = TextFieldDefaults.textFieldColors(
                                 backgroundColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent,
@@ -182,13 +193,14 @@ fun HomeSearch(
                                 }
                         )
                 )
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { /* Functionality not supported yet */ }) {
-                    Icon(
-                            imageVector = Icons.Filled.MoreVert,
-                            contentDescription = "stringResource(R.string.cd_more_actions)"
-                    )
-                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = { /* Functionality not supported yet */ }) {
+                Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = "stringResource(R.string.cd_more_actions)"
+                )
             }
         }
 
@@ -235,29 +247,34 @@ fun ProductCard(product: Product, viewModel: ProfileViewModel) {
             }
         }
         //comment/like section
-        var text by rememberSaveable { mutableStateOf("") }
-        val keyboardController = LocalSoftwareKeyboardController.current
-        TextField(
-                value = text,
-                textStyle = TextStyle(fontStyle = FontStyle.Normal),
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = Color.Gray, shape = RectangleShape),
-                onValueChange = {
-                    text = it
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = {
-                    if (text.isNotBlank())
-                        viewModel.addComment(text, product.id)
-                    text = ""
-                    keyboardController?.hide()
-                }),
-                label = { Text("Enter your comment", color = Color.LightGray) })
+        commentSection(product, viewModel)
     }
 
+}
+
+@Composable
+fun commentSection(product: Product, viewModel: ProfileViewModel) {
+    var text by rememberSaveable { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    TextField(
+            value = text,
+            textStyle = TextStyle(fontStyle = FontStyle.Normal),
+            modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.Gray, shape = RectangleShape),
+            onValueChange = {
+                text = it
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                if (text.isNotBlank())
+                    viewModel.addComment(text, product.id)
+                text = ""
+                keyboardController?.hide()
+            }),
+            label = { Text("Enter your comment", color = Color.LightGray) })
 }
 
 @Composable
@@ -311,5 +328,5 @@ fun showDialog(
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    HomeSearch(Modifier.padding(9.dp), "serch", {})
+    HomeSearch("Home search", {})
 }

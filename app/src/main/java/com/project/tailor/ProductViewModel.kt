@@ -14,19 +14,41 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val repository: ProductsRepository,
-    private val dispatcherProvider: CoroutinesDispatcherProvider,
+        private val repository: ProductsRepository,
+        private val dispatcherProvider: CoroutinesDispatcherProvider,
 
-    ) : ViewModel() {
+        ) : ViewModel() {
     private val _productResult =
-        MutableStateFlow<ProductResult>(ProductResult.Loading)
+            MutableStateFlow<ProductResult>(ProductResult.Loading)
     val productResult: StateFlow<ProductResult> =
-        _productResult
+            _productResult
+
+    fun filterProducts(keyword: String) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            repository.getProducts().onEach { it ->
+                val result = it ?: return@onEach
+                when (result) {
+                    is Result.Success -> {
+                        Log.e("filter", "Success ${result.data.size}")
+                        _productResult.value = ProductResult.ProductList(result.data.filter { it.title.lowercase(Locale.ROOT).contains(keyword.lowercase(Locale.ROOT)) })
+                    }
+                    is Result.Loading -> {
+                        _productResult.value = ProductResult.Loading
+                    }
+                    is Result.Error -> {
+                        _productResult.value =
+                                ProductResult.Error(result.exception.message.orEmpty())
+                    }
+                }
+            }.collect()
+        }
+    }
 
     fun getProducts() {
         viewModelScope.launch(dispatcherProvider.io) {
@@ -42,7 +64,7 @@ class ProfileViewModel @Inject constructor(
                     }
                     is Result.Error -> {
                         _productResult.value =
-                            ProductResult.Error(result.exception.message.orEmpty())
+                                ProductResult.Error(result.exception.message.orEmpty())
                     }
                 }
             }.collect()
