@@ -1,6 +1,7 @@
 package com.project.tailor.api
 
 import com.project.tailor.model.LoggedInUser
+import com.project.tailor.model.Products
 import com.project.tailor.model.SignUpResponse
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -10,6 +11,7 @@ import retrofit2.http.POST
 import retrofit2.http.QueryMap
 
 const val URL_LOGIN = "api/auth/login"
+const val URL_PRODUCTS = "api/products"
 const val URL_SIGNUP = "api/auth/register"
 const val URL_FACEBOOK = "api/auth/facebook-login"
 const val URL_GOOGLE = "api/auth/google-login"
