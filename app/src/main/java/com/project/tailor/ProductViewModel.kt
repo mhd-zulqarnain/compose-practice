@@ -19,15 +19,26 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
-        private val repository: ProductsRepository,
-        private val dispatcherProvider: CoroutinesDispatcherProvider,
+class ProductViewModel @Inject constructor(
+    private val repository: ProductsRepository,
+    private val dispatcherProvider: CoroutinesDispatcherProvider,
 
-        ) : ViewModel() {
+    ) : ViewModel() {
     private val _productResult =
-            MutableStateFlow<ProductResult>(ProductResult.Loading)
+        MutableStateFlow<ProductResult>(ProductResult.Loading)
     val productResult: StateFlow<ProductResult> =
-            _productResult
+        _productResult
+
+    private val _commentResult =
+        MutableStateFlow<List<Comment>>(arrayListOf())
+    val commentResult: StateFlow<List<Comment>> =
+        _commentResult
+
+    private val _productDetails =
+        MutableStateFlow<Product?>(null)
+    val productDetails: StateFlow<Product?> =
+        _productDetails
+
 
     fun filterProducts(keyword: String) {
         viewModelScope.launch(dispatcherProvider.io) {
@@ -36,14 +47,16 @@ class ProfileViewModel @Inject constructor(
                 when (result) {
                     is Result.Success -> {
                         Log.e("filter", "Success ${result.data.size}")
-                        _productResult.value = ProductResult.ProductList(result.data.filter { it.title.lowercase(Locale.ROOT).contains(keyword.lowercase(Locale.ROOT)) })
+                        _productResult.value = ProductResult.ProductList(result.data.filter {
+                            it.title.lowercase(Locale.ROOT).contains(keyword.lowercase(Locale.ROOT))
+                        })
                     }
                     is Result.Loading -> {
                         _productResult.value = ProductResult.Loading
                     }
                     is Result.Error -> {
                         _productResult.value =
-                                ProductResult.Error(result.exception.message.orEmpty())
+                            ProductResult.Error(result.exception.message.orEmpty())
                     }
                 }
             }.collect()
@@ -64,7 +77,7 @@ class ProfileViewModel @Inject constructor(
                     }
                     is Result.Error -> {
                         _productResult.value =
-                                ProductResult.Error(result.exception.message.orEmpty())
+                            ProductResult.Error(result.exception.message.orEmpty())
                     }
                 }
             }.collect()
@@ -77,14 +90,22 @@ class ProfileViewModel @Inject constructor(
             productId?.let {
                 val tmp = Comment(productId = productId, comment = comment)
                 repository.addComment(tmp)
-                val comments = repository.getComments(productId)
-                Log.e("comments", "size :${comments.size}")
+                getComments(productId)
             }
         }
     }
 
-    fun getComments(productId: Int): List<Comment> {
-        return repository.getComments(productId)
+    fun getComments(productId: Int?) {
+        productId?.let {
+            viewModelScope.launch(dispatcherProvider.io) {
+                _commentResult.value = repository.getComments(productId)
+            }
+        }
+
+    }
+
+    fun setProductDetails(product: Product) {
+        _productDetails.value = product
     }
 
     sealed class ProductResult {

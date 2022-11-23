@@ -3,7 +3,6 @@ package com.project.tailor.ui.home
 import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,30 +24,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.project.tailor.ProfileViewModel
+import com.project.tailor.ProductViewModel
 import com.project.tailor.model.Product
 import com.project.tailor.ui.Screen
 import com.project.tailor.ui.components.showDialog
 
 
 @Composable
-fun HomeScreen(viewModel: ProfileViewModel, context: Context, navController: NavHostController) {
+fun HomeScreen(viewModel: ProductViewModel, context: Context, navController: NavHostController) {
     Column {
         HomeSearch(searchInput = "", onSearchInputChanged = {
             viewModel.filterProducts(it)
         })
         val productUIState by viewModel.productResult.collectAsState()
-        ProductList(productUIState = productUIState, context, viewModel,navController)
+        ProductList(productUIState = productUIState, context, viewModel, navController)
     }
 
 }
@@ -56,28 +53,28 @@ fun HomeScreen(viewModel: ProfileViewModel, context: Context, navController: Nav
 
 @Composable
 fun ProductList(
-    productUIState: ProfileViewModel.ProductResult,
+    productUIState: ProductViewModel.ProductResult,
     context: Context,
-    viewModel: ProfileViewModel,
+    viewModel: ProductViewModel,
     navController: NavHostController
 ) {
 
 
     when (productUIState) {
-        is ProfileViewModel.ProductResult.ProductList -> {
+        is ProductViewModel.ProductResult.ProductList -> {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(16.dp)
             ) {
                 items(productUIState.list) { product ->
-                    ProductCard(product, viewModel,navController)
+                    ProductCard(product, viewModel, navController)
                 }
             }
         }
-        is ProfileViewModel.ProductResult.Error -> {
+        is ProductViewModel.ProductResult.Error -> {
             ErrorCard(productUIState.error)
         }
-        is ProfileViewModel.ProductResult.Loading -> {
+        is ProductViewModel.ProductResult.Loading -> {
             loader()
         }
     }
@@ -119,7 +116,6 @@ fun ErrorCard(error: String) {
 
     }
 }
-
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -189,9 +185,14 @@ fun HomeSearch(
 
     }
 }
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ProductCard(product: Product, viewModel: ProfileViewModel, navController: NavHostController) {
+fun ProductCard(
+    product: Product,
+    viewModel: ProductViewModel,
+    navController: NavHostController? = null
+) {
     val showDialog = remember { mutableStateOf(false) }
     if (showDialog.value) {
         showDialog(
@@ -212,7 +213,10 @@ fun ProductCard(product: Product, viewModel: ProfileViewModel, navController: Na
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.clickable(onClick = {
 //                showDialog.value = true
-                navController.navigate(Screen.Details.toString())
+                navController?.let {
+                    viewModel.setProductDetails(product)
+                    navController.navigate(Screen.Details.toString())
+                }
             })
         ) {
             Image(
