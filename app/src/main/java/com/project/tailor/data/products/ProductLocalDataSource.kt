@@ -5,6 +5,7 @@ import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
 import com.project.tailor.room.CommentDao
 import com.project.tailor.room.ProductDao
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -38,8 +39,9 @@ class ProductLocalDataSource @Inject constructor(
         commentDao.insertComment(comment)
     }
 
-    fun getComments(productId: Int): List<Comment> =
-        commentDao.getAllComments(productId)
+    fun getComments(productId: Int): Flow<List<Comment>>{
+        return commentDao.getAllComments(productId)
+    }
 
     fun deleteComment(commentId: Int) {
         commentDao.deleteComment(commentId)

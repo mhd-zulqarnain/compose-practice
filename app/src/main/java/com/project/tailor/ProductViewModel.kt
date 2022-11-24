@@ -9,10 +9,7 @@ import com.project.tailor.di.CoroutinesDispatcherProvider
 import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -90,28 +87,25 @@ class ProductViewModel @Inject constructor(
             productId?.let {
                 val tmp = Comment(productId = productId, comment = comment)
                 repository.addComment(tmp)
-                getComments(productId)
             }
         }
     }
 
     fun getComments(productId: Int?) {
         productId?.let {
-            viewModelScope.launch(dispatcherProvider.io) {
-                _commentResult.value = repository.getComments(productId)
-            }
+            repository.getComments(productId).onEach {
+                _commentResult.value = it
+            }.launchIn(viewModelScope)
         }
 
     }
 
-    fun deleteComment(productId: Int?,commentId: Int) {
+    fun deleteComment(productId: Int?, commentId: Int) {
         productId?.let {
             viewModelScope.launch(dispatcherProvider.io) {
-               repository.deleteComment(commentId)
-
+                repository.deleteComment(commentId)
             }
         }
-
     }
 
     fun setProductDetails(product: Product) {

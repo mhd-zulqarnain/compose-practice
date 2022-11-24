@@ -208,7 +208,7 @@ fun ProductCard(
     Column(
         Modifier.padding(8.dp)
     ) {
-        val image = (0 until (product.images.size)).random()
+//        val image = (0 until (product.images.size)).random()
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.clickable(onClick = {
@@ -220,7 +220,7 @@ fun ProductCard(
             })
         ) {
             Image(
-                painter = rememberImagePainter(product.images[image]),
+                painter = rememberImagePainter(product.images[0]),
                 contentDescription = product.title,
                 modifier = Modifier
                     .size(100.dp)
