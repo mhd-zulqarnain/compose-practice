@@ -11,6 +11,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.project.tailor.ProductViewModel
 import com.project.tailor.model.Product
@@ -100,20 +102,36 @@ fun comments(viewModel: ProductViewModel, context: Context) {
     val comments by viewModel.commentResult.collectAsState()
     Row(
         modifier = Modifier
-            .padding(16.dp)
             .fillMaxWidth()
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(16.dp)
         ) {
             items(comments) { comment ->
-                Column(modifier = Modifier.padding(8.dp, 2.dp)) {
+                Column(
+                    Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                ) {
                     Text(
                         text = DateFormat.getInstance().format(comment.timeStamp).toString(),
-                        Modifier.size(5.dp)
+                        fontSize = 10.sp
                     )
-                    Text(text = comment.comment, Modifier.size(12.dp))
+                    Row() {
+                        Text(
+                            modifier = Modifier.weight(3f),
+                            text = comment.comment,
+                            fontSize = 16.sp
+                        )
+                        IconButton(
+                            onClick = {
+                                viewModel.deleteComment(comment.productId,comment.id!!)
+                            },
+                            modifier = Modifier.weight(1f).size(16.dp),
+                        ) {
+                            Icon(imageVector = Icons.Filled.Delete, "delete")
+                        }
+                    }
 
                 }
             }

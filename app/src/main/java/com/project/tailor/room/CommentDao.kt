@@ -12,4 +12,7 @@ interface CommentDao {
 
     @Query("SELECT * FROM comment where productId = :productId")
     fun getAllComments(productId: Int): List<Comment>
+
+    @Query("Delete FROM comment where id = :commentId")
+    fun deleteComment(commentId: Int)
 }

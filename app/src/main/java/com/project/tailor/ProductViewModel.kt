@@ -104,6 +104,16 @@ class ProductViewModel @Inject constructor(
 
     }
 
+    fun deleteComment(productId: Int?,commentId: Int) {
+        productId?.let {
+            viewModelScope.launch(dispatcherProvider.io) {
+               repository.deleteComment(commentId)
+
+            }
+        }
+
+    }
+
     fun setProductDetails(product: Product) {
         _productDetails.value = product
     }

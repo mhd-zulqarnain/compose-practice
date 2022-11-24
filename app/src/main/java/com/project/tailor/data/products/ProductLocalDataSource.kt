@@ -10,8 +10,8 @@ import javax.inject.Singleton
 
 @Singleton
 class ProductLocalDataSource @Inject constructor(
-        private val productDao: ProductDao,
-        private val commentDao: CommentDao
+    private val productDao: ProductDao,
+    private val commentDao: CommentDao
 ) {
     fun insertProductList(list: ArrayList<Product>) {
         list.forEach {
@@ -38,7 +38,10 @@ class ProductLocalDataSource @Inject constructor(
         commentDao.insertComment(comment)
     }
 
-    fun getComments(productId: Int): List<Comment> {
-        return commentDao.getAllComments(productId)
+    fun getComments(productId: Int): List<Comment> =
+        commentDao.getAllComments(productId)
+
+    fun deleteComment(commentId: Int) {
+        commentDao.deleteComment(commentId)
     }
 }

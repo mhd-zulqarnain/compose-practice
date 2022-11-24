@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.project.tailor.ui.Screen
 import com.project.tailor.ui.details.DetailsScreen
+import com.project.tailor.ui.details.comments
 import com.project.tailor.ui.home.HomeScreen
 import com.project.tailor.ui.home.HomeSearch
 import com.project.tailor.ui.theme.TailorTheme

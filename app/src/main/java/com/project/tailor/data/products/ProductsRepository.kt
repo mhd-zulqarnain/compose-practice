@@ -47,8 +47,10 @@ class ProductsRepository @Inject constructor(
         localDataSource.addComment(comment)
     }
 
-    fun getComments(productId: Int): List<Comment> {
-        return localDataSource.getComments(productId)
+    fun getComments(productId: Int): List<Comment> = localDataSource.getComments(productId)
+
+    fun deleteComment(commentId: Int) {
+        localDataSource.deleteComment(commentId)
     }
 
 }
