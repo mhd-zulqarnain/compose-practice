@@ -9,6 +9,8 @@ import com.project.tailor.di.CoroutinesDispatcherProvider
 import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -36,6 +38,7 @@ class ProductViewModel @Inject constructor(
     val productDetails: StateFlow<Product?> =
         _productDetails
 
+    private var job: Job? = null
 
     fun filterProducts(keyword: String) {
         viewModelScope.launch(dispatcherProvider.io) {
@@ -92,10 +95,15 @@ class ProductViewModel @Inject constructor(
     }
 
     fun getComments(productId: Int?) {
-        productId?.let {
-            repository.getComments(productId).onEach {
-                _commentResult.value = it
-            }.launchIn(viewModelScope)
+        Log.e("getComments", "upper productId: $productId")
+        job?.cancel()
+        productDetails.value?.id?.let { id ->
+            job = viewModelScope.launch {
+                repository.getComments(id).cancellable().collect {
+                    Log.e("getComments", "productId: $id")
+                    _commentResult.value = it
+                }
+            }
         }
 
     }
@@ -109,6 +117,7 @@ class ProductViewModel @Inject constructor(
     }
 
     fun setProductDetails(product: Product) {
+        job?.cancel()
         _productDetails.value = product
     }
 

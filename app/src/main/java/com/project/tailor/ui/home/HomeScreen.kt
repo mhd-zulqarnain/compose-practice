@@ -128,10 +128,11 @@ fun HomeSearch(
         shape = RoundedCornerShape(9.dp),
         border = BorderStroke(
             Dp.Hairline,
-            MaterialTheme.colors.onSurface.copy(alpha = .6f)
+            MaterialTheme.colors.secondary.copy(alpha = .6f)
         ),
         shadowElevation = 2.dp,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colors.secondary,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -144,8 +145,8 @@ fun HomeSearch(
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
+            var text by rememberSaveable { mutableStateOf(searchInput) }
             ProvideTextStyle(TextStyle(color = Color.White)) {
-                var text by rememberSaveable { mutableStateOf(searchInput) }
                 val keyboardController = LocalSoftwareKeyboardController.current
                 TextField(
                     value = text,
