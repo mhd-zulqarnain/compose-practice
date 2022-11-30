@@ -17,9 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.project.tailor.ui.Screen
 import com.project.tailor.ui.details.DetailsScreen
-import com.project.tailor.ui.details.comments
 import com.project.tailor.ui.home.HomeScreen
-import com.project.tailor.ui.home.HomeSearch
 import com.project.tailor.ui.theme.TailorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(route = Screen.Details.toString()) {
                         val product by viewModel.productDetails.collectAsState()
-                        DetailsScreen(viewModel, this@MainActivity, navController,product)
+                        DetailsScreen(viewModel, this@MainActivity, navController, product)
                     }
                 }
 
@@ -50,8 +48,14 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun DefaultPreview() {
-    HomeSearch("Home search", {})
+//    ProductView(
+//        modifier = Modifier.padding(),
+//        {},
+//        "Home search",
+//        "Home search",
+//        painterResource(id = R.drawable.ic_launcher_background)
+//    )
 }

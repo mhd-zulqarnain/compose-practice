@@ -10,7 +10,6 @@ import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -39,6 +38,7 @@ class ProductViewModel @Inject constructor(
         _productDetails
 
     private var job: Job? = null
+    private var detailsJob: Job? = null
 
     fun filterProducts(keyword: String) {
         viewModelScope.launch(dispatcherProvider.io) {
@@ -63,24 +63,31 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    /**
+     * get data from local db if the db is not empty
+     * */
     fun getProducts() {
         viewModelScope.launch(dispatcherProvider.io) {
-            repository.getProducts().onEach {
-                val result = it ?: return@onEach
-                when (result) {
-                    is Result.Success -> {
-                        Log.e("getProducts", "Success ${result.data.size}")
-                        _productResult.value = ProductResult.ProductList(result.data)
-                    }
-                    is Result.Loading -> {
-                        _productResult.value = ProductResult.Loading
-                    }
-                    is Result.Error -> {
-                        _productResult.value =
-                            ProductResult.Error(result.exception.message.orEmpty())
-                    }
-                }
-            }.collect()
+            repository.getProductFromDB().cancellable().collect {
+                if (it.isEmpty())
+                    repository.getProducts().onEach {
+                        val result = it ?: return@onEach
+                        when (result) {
+                            is Result.Success -> {
+                                Log.e("getProducts", "Success ${result.data.size}")
+                            }
+                            is Result.Loading -> {
+                                _productResult.value = ProductResult.Loading
+                            }
+                            is Result.Error -> {
+                                _productResult.value =
+                                    ProductResult.Error(result.exception.message.orEmpty())
+                            }
+                        }
+                    }.collect()
+                else
+                    _productResult.value = ProductResult.ProductList(it)
+            }
         }
 
     }
@@ -105,7 +112,6 @@ class ProductViewModel @Inject constructor(
                 }
             }
         }
-
     }
 
     fun deleteComment(productId: Int?, commentId: Int) {
@@ -118,7 +124,18 @@ class ProductViewModel @Inject constructor(
 
     fun setProductDetails(product: Product) {
         job?.cancel()
-        _productDetails.value = product
+        detailsJob?.cancel()
+        detailsJob = viewModelScope.launch(dispatcherProvider.io) {
+            repository.getSingleProduct(product.id ?: 0).cancellable().collect{
+                _productDetails.value =it
+            }
+        }
+    }
+
+    fun toggleFavorite(product: Product) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            repository.toggleFavorite(product)
+        }
     }
 
     sealed class ProductResult {
