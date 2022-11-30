@@ -9,25 +9,36 @@ import com.project.tailor.di.CoroutinesDispatcherProvider
 import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
-        private val repository: ProductsRepository,
-        private val dispatcherProvider: CoroutinesDispatcherProvider,
+class ProductViewModel @Inject constructor(
+    private val repository: ProductsRepository,
+    private val dispatcherProvider: CoroutinesDispatcherProvider,
 
-        ) : ViewModel() {
+    ) : ViewModel() {
     private val _productResult =
-            MutableStateFlow<ProductResult>(ProductResult.Loading)
+        MutableStateFlow<ProductResult>(ProductResult.Loading)
     val productResult: StateFlow<ProductResult> =
-            _productResult
+        _productResult
+
+    private val _commentResult =
+        MutableStateFlow<List<Comment>>(arrayListOf())
+    val commentResult: StateFlow<List<Comment>> =
+        _commentResult
+
+    private val _productDetails =
+        MutableStateFlow<Product?>(null)
+    val productDetails: StateFlow<Product?> =
+        _productDetails
+
+    private var job: Job? = null
+    private var detailsJob: Job? = null
 
     fun filterProducts(keyword: String) {
         viewModelScope.launch(dispatcherProvider.io) {
@@ -36,38 +47,47 @@ class ProfileViewModel @Inject constructor(
                 when (result) {
                     is Result.Success -> {
                         Log.e("filter", "Success ${result.data.size}")
-                        _productResult.value = ProductResult.ProductList(result.data.filter { it.title.lowercase(Locale.ROOT).contains(keyword.lowercase(Locale.ROOT)) })
+                        _productResult.value = ProductResult.ProductList(result.data.filter {
+                            it.title.lowercase(Locale.ROOT).contains(keyword.lowercase(Locale.ROOT))
+                        })
                     }
                     is Result.Loading -> {
                         _productResult.value = ProductResult.Loading
                     }
                     is Result.Error -> {
                         _productResult.value =
-                                ProductResult.Error(result.exception.message.orEmpty())
+                            ProductResult.Error(result.exception.message.orEmpty())
                     }
                 }
             }.collect()
         }
     }
 
+    /**
+     * get data from local db if the db is not empty
+     * */
     fun getProducts() {
         viewModelScope.launch(dispatcherProvider.io) {
-            repository.getProducts().onEach {
-                val result = it ?: return@onEach
-                when (result) {
-                    is Result.Success -> {
-                        Log.e("getProducts", "Success ${result.data.size}")
-                        _productResult.value = ProductResult.ProductList(result.data)
-                    }
-                    is Result.Loading -> {
-                        _productResult.value = ProductResult.Loading
-                    }
-                    is Result.Error -> {
-                        _productResult.value =
-                                ProductResult.Error(result.exception.message.orEmpty())
-                    }
-                }
-            }.collect()
+            repository.getProductFromDB().cancellable().collect {
+                if (it.isEmpty())
+                    repository.getProducts().onEach {
+                        val result = it ?: return@onEach
+                        when (result) {
+                            is Result.Success -> {
+                                Log.e("getProducts", "Success ${result.data.size}")
+                            }
+                            is Result.Loading -> {
+                                _productResult.value = ProductResult.Loading
+                            }
+                            is Result.Error -> {
+                                _productResult.value =
+                                    ProductResult.Error(result.exception.message.orEmpty())
+                            }
+                        }
+                    }.collect()
+                else
+                    _productResult.value = ProductResult.ProductList(it)
+            }
         }
 
     }
@@ -77,14 +97,45 @@ class ProfileViewModel @Inject constructor(
             productId?.let {
                 val tmp = Comment(productId = productId, comment = comment)
                 repository.addComment(tmp)
-                val comments = repository.getComments(productId)
-                Log.e("comments", "size :${comments.size}")
             }
         }
     }
 
-    fun getComments(productId: Int): List<Comment> {
-        return repository.getComments(productId)
+    fun getComments(productId: Int?) {
+        Log.e("getComments", "upper productId: $productId")
+        job?.cancel()
+        productDetails.value?.id?.let { id ->
+            job = viewModelScope.launch {
+                repository.getComments(id).cancellable().collect {
+                    Log.e("getComments", "productId: $id")
+                    _commentResult.value = it
+                }
+            }
+        }
+    }
+
+    fun deleteComment(productId: Int?, commentId: Int) {
+        productId?.let {
+            viewModelScope.launch(dispatcherProvider.io) {
+                repository.deleteComment(commentId)
+            }
+        }
+    }
+
+    fun setProductDetails(product: Product) {
+        job?.cancel()
+        detailsJob?.cancel()
+        detailsJob = viewModelScope.launch(dispatcherProvider.io) {
+            repository.getSingleProduct(product.id ?: 0).cancellable().collect{
+                _productDetails.value =it
+            }
+        }
+    }
+
+    fun toggleFavorite(product: Product) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            repository.toggleFavorite(product)
+        }
     }
 
     sealed class ProductResult {

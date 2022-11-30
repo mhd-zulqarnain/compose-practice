@@ -1,7 +1,8 @@
 package com.project.tailor.model
 
 import androidx.annotation.NonNull
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 
@@ -24,7 +25,8 @@ data class Product(
     @SerializedName("brand") var brand: String? = null,
     @SerializedName("category") var category: String? = null,
     @SerializedName("thumbnail") var thumbnail: String? = null,
-    @SerializedName("images") var images: List<String> = arrayListOf()
+    @SerializedName("images") var images: List<String> = arrayListOf(),
+    @SerializedName("favorite") var favorite: Boolean = false
 )
 
 @Entity
@@ -34,7 +36,7 @@ data class Comment(
     val productId: Int? = null,
     val comment: String = "",
     val timeStamp: Long = System.currentTimeMillis(),
-){
+) {
 //    companion object {
 //
 //        fun buildParentsWithComment(ProductsWithComments: List<ProductsWithComments>): List<Combined> {

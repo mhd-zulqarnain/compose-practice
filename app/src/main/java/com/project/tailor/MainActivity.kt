@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
@@ -16,13 +18,12 @@ import androidx.navigation.compose.rememberNavController
 import com.project.tailor.ui.Screen
 import com.project.tailor.ui.details.DetailsScreen
 import com.project.tailor.ui.home.HomeScreen
-import com.project.tailor.ui.home.HomeSearch
 import com.project.tailor.ui.theme.TailorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: ProfileViewModel by viewModels()
+    private val viewModel: ProductViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +37,8 @@ class MainActivity : ComponentActivity() {
                         HomeScreen(viewModel, this@MainActivity, navController)
                     }
                     composable(route = Screen.Details.toString()) {
-                        DetailsScreen(viewModel, this@MainActivity, navController)
+                        val product by viewModel.productDetails.collectAsState()
+                        DetailsScreen(viewModel, this@MainActivity, navController, product)
                     }
                 }
 
@@ -46,8 +48,14 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun DefaultPreview() {
-    HomeSearch("Home search", {})
+//    ProductView(
+//        modifier = Modifier.padding(),
+//        {},
+//        "Home search",
+//        "Home search",
+//        painterResource(id = R.drawable.ic_launcher_background)
+//    )
 }

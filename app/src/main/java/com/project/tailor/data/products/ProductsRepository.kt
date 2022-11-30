@@ -14,30 +14,29 @@ class ProductsRepository @Inject constructor(
     private val localDataSource: ProductLocalDataSource
 ) {
 
+    fun getProductFromDB(): Flow<List<Product>> {
+        return localDataSource.getAll()
+    }
+
     fun getProducts(): Flow<Result<List<Product>>> = flow {
         try {
-            emit(Result.Loading)
-            val list = localDataSource.getAll()
-            if (list.isEmpty().not())
-                emit(Result.Success(list))
-            else
-                when (val result = dataSource.getProducts()) {
-                    is Result.Success -> {
-                        val data = result.data.products
-                        localDataSource.insertProductList(data).run {
-                            emit(Result.Success(data))
-                        }
+            when (val result = dataSource.getProducts()) {
+                is Result.Success -> {
+                    val data = result.data.products
+                    localDataSource.insertProductList(data).run {
+                        emit(Result.Success(data))
                     }
-                    is Result.Error -> {
-                        val data = result.exception
-                        emit(Result.Error(data))
-                    }
-                    is Result.Loading -> {
-                        emit(Result.Loading)
-
-                    }
+                }
+                is Result.Error -> {
+                    val data = result.exception
+                    emit(Result.Error(data))
+                }
+                is Result.Loading -> {
+                    emit(Result.Loading)
 
                 }
+
+            }
         } catch (e: Exception) {
             emit(Result.Error(e))
         }
@@ -47,8 +46,19 @@ class ProductsRepository @Inject constructor(
         localDataSource.addComment(comment)
     }
 
-    fun getComments(productId: Int): List<Comment> {
+    fun getComments(productId: Int): Flow<List<Comment>> {
         return localDataSource.getComments(productId)
     }
+
+    fun deleteComment(commentId: Int) {
+        localDataSource.deleteComment(commentId)
+    }
+
+    fun toggleFavorite(product: Product) {
+        localDataSource.toggleFavorite(product)
+    }
+
+    fun getSingleProduct(id: Int): Flow<Product> =
+        localDataSource.getSingleProduct(id)
 
 }

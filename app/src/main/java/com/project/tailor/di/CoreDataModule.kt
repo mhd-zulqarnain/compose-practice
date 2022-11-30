@@ -20,7 +20,6 @@ import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
-import com.project.tailor.BuildConfig
 import com.project.tailor.api.AccessTokenInterceptor
 import com.project.tailor.api.MockInterceptor
 import com.project.tailor.di.qualifiers.ApiGateway
@@ -31,6 +30,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
+//import com.project.tailor.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -63,7 +63,7 @@ class CoreDataModule {
         accessTokenInterceptor: AccessTokenInterceptor
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
-        if (BuildConfig.DEBUG)
+//        if (BuildConfig.DEBUG)
             builder.addInterceptor(chuckerInterceptor)
         builder
             .addInterceptor(loggingInterceptor)
@@ -84,7 +84,7 @@ class CoreDataModule {
         chuckerInterceptor: ChuckerInterceptor,
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
-        if (BuildConfig.DEBUG)
+//        if (BuildConfig.DEBUG)
         builder.addInterceptor(chuckerInterceptor)
         builder
             .addInterceptor(loggingInterceptor)
@@ -100,11 +100,11 @@ class CoreDataModule {
     @Singleton
     fun loggingInterceptor(): HttpLoggingInterceptor =
         HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
+//            level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
-            } else {
-                HttpLoggingInterceptor.Level.NONE
-            }
+//            } else {
+//                HttpLoggingInterceptor.Level.NONE
+//            }
         }
 
     @Provides

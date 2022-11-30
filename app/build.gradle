@@ -5,7 +5,7 @@ plugins {
     id "kotlin-android"
     id "kotlin-parcelize"
     id 'dagger.hilt.android.plugin'
-
+    id 'com.google.relay' version '0.3.01'
 }
 def appVersionName = "1.0." + rootProject.gitCommitsForThisRelease
 def appVersionCode = rootProject.gitCommitCount
