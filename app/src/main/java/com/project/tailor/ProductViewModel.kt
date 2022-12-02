@@ -10,9 +10,9 @@ import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 
@@ -39,27 +39,20 @@ class ProductViewModel @Inject constructor(
 
     private var job: Job? = null
     private var detailsJob: Job? = null
+    private var allProductJob: Job? = null
+    private var searchJob: Job? = null
 
     fun filterProducts(keyword: String) {
-        viewModelScope.launch(dispatcherProvider.io) {
-            repository.getProducts().onEach { it ->
-                val result = it ?: return@onEach
-                when (result) {
-                    is Result.Success -> {
-                        Log.e("filter", "Success ${result.data.size}")
-                        _productResult.value = ProductResult.ProductList(result.data.filter {
-                            it.title.lowercase(Locale.ROOT).contains(keyword.lowercase(Locale.ROOT))
-                        })
-                    }
-                    is Result.Loading -> {
-                        _productResult.value = ProductResult.Loading
-                    }
-                    is Result.Error -> {
-                        _productResult.value =
-                            ProductResult.Error(result.exception.message.orEmpty())
-                    }
-                }
-            }.collect()
+        allProductJob?.cancel()
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch(dispatcherProvider.io) {
+            repository.filterProduct(keyword).cancellable().collect {
+                if (it.isEmpty())
+                    _productResult.value =
+                        ProductResult.Error("No product found with $keyword title")
+                else
+                    _productResult.value = ProductResult.ProductList(it)
+            }
         }
     }
 
@@ -68,25 +61,27 @@ class ProductViewModel @Inject constructor(
      * */
     fun getProducts() {
         viewModelScope.launch(dispatcherProvider.io) {
-            repository.getProductFromDB().cancellable().collect {
-                if (it.isEmpty())
-                    repository.getProducts().onEach {
-                        val result = it ?: return@onEach
-                        when (result) {
-                            is Result.Success -> {
-                                Log.e("getProducts", "Success ${result.data.size}")
+            allProductJob = viewModelScope.launch {
+                repository.getProductFromDB().cancellable().collect {
+                    if (it.isEmpty())
+                        repository.getProducts().onEach {
+                            val result = it ?: return@onEach
+                            when (result) {
+                                is Result.Success -> {
+                                    Log.e("getProducts", "Success ${result.data.size}")
+                                }
+                                is Result.Loading -> {
+                                    _productResult.value = ProductResult.Loading
+                                }
+                                is Result.Error -> {
+                                    _productResult.value =
+                                        ProductResult.Error(result.exception.message.orEmpty())
+                                }
                             }
-                            is Result.Loading -> {
-                                _productResult.value = ProductResult.Loading
-                            }
-                            is Result.Error -> {
-                                _productResult.value =
-                                    ProductResult.Error(result.exception.message.orEmpty())
-                            }
-                        }
-                    }.collect()
-                else
-                    _productResult.value = ProductResult.ProductList(it)
+                        }.collect()
+                    else
+                        _productResult.value = ProductResult.ProductList(it)
+                }
             }
         }
 
@@ -126,8 +121,8 @@ class ProductViewModel @Inject constructor(
         job?.cancel()
         detailsJob?.cancel()
         detailsJob = viewModelScope.launch(dispatcherProvider.io) {
-            repository.getSingleProduct(product.id ?: 0).cancellable().collect{
-                _productDetails.value =it
+            repository.getSingleProduct(product.id ?: 0).cancellable().collect {
+                _productDetails.value = it
             }
         }
     }

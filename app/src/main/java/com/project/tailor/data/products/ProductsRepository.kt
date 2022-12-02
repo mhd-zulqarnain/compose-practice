@@ -18,6 +18,11 @@ class ProductsRepository @Inject constructor(
         return localDataSource.getAll()
     }
 
+    fun filterProduct(param :String): Flow<List<Product>> {
+        return localDataSource.filterProduct(param)
+    }
+
+
     fun getProducts(): Flow<Result<List<Product>>> = flow {
         try {
             when (val result = dataSource.getProducts()) {

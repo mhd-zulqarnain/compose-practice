@@ -15,10 +15,13 @@ interface ProductDao {
     fun getAll(): Flow<List<Product>>
 
     @Query("UPDATE product SET favorite = :favorite where id =:id ")
-     fun toggleFavorite(favorite: Boolean, id: Int)
+    fun toggleFavorite(favorite: Boolean, id: Int)
 
     @Query("SELECT * FROM product where id = :productId")
     fun getSingleProduct(productId: Int): Flow<Product>
+
+    @Query("SELECT * FROM product where title like '%' ||:param || '%' ")
+    fun filterProduct(param: String): Flow<List<Product>>
 
 //    @Query("SELECT * FROM product JOIN Comment ON comment.productId = product.id")
 //    abstract fun getProductsWithComments(): List<Combined>
