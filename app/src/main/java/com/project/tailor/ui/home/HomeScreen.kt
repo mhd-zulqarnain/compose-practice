@@ -50,6 +50,8 @@ fun HomeScreen(viewModel: ProductViewModel, context: Context, navController: Nav
     Column {
         HomeSearch(searchInput = "", onSearchInputChanged = {
             viewModel.filterProducts(it)
+        }, {
+            viewModel.filterProducts("", it)
         })
         val productUIState by viewModel.productResult.collectAsState()
         ProductList(productUIState = productUIState, context, viewModel, navController)
@@ -129,7 +131,8 @@ fun ErrorCard(error: String) {
 @Composable
 fun HomeSearch(
     searchInput: String = "",
-    onSearchInputChanged: (String) -> Unit
+    onSearchInputChanged: (String) -> Unit,
+    onFilter: (Boolean) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
 
@@ -185,13 +188,45 @@ fun HomeSearch(
                     )
                 )
             }
-
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { /* Functionality not supported yet */ }) {
-                Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = "stringResource(R.string.cd_more_actions)"
-                )
+            Box {
+                var mDisplayMenu by remember { mutableStateOf(false) }
+                var filter by remember { mutableStateOf(false) }
+                IconButton(onClick = { mDisplayMenu = !mDisplayMenu }) {
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = "stringResource(R.string.cd_more_actions)"
+                    )
+                }
+                // Creating a dropdown menu
+                DropdownMenu(
+                    expanded = mDisplayMenu,
+                    onDismissRequest = { mDisplayMenu = false }
+                ) {
+
+                    DropdownMenuItem(onClick = { }) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable {
+                                filter = !filter
+                                onFilter(filter)
+                            }
+                        ) {
+                            Checkbox(checked = filter, onCheckedChange = {
+                                filter = !filter
+                                onFilter(filter)
+                            })
+                            Text(text = "Filter by favorite")
+                        }
+                    }
+                    Text(text = "clear Filter",
+                        Modifier
+                            .padding(65.dp, 0.dp)
+                            .clickable {
+                                filter = false
+                                onSearchInputChanged("")
+                            })
+                }
             }
         }
 

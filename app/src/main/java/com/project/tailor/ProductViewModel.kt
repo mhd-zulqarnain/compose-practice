@@ -10,7 +10,6 @@ import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,7 +41,7 @@ class ProductViewModel @Inject constructor(
     private var allProductJob: Job? = null
     private var searchJob: Job? = null
 
-    fun filterProducts(keyword: String) {
+    fun filterProducts(keyword: String, filter: Boolean? = null) {
         allProductJob?.cancel()
         searchJob?.cancel()
         searchJob = viewModelScope.launch(dispatcherProvider.io) {
@@ -50,8 +49,14 @@ class ProductViewModel @Inject constructor(
                 if (it.isEmpty())
                     _productResult.value =
                         ProductResult.Error("No product found with $keyword title")
-                else
-                    _productResult.value = ProductResult.ProductList(it)
+                else {
+                    if (filter != null)
+                        _productResult.value =
+                            ProductResult.ProductList(it.filter { it.favorite == filter })
+                    else
+                        _productResult.value = ProductResult.ProductList(it)
+
+                }
             }
         }
     }
@@ -60,8 +65,7 @@ class ProductViewModel @Inject constructor(
      * get data from local db if the db is not empty
      * */
     fun getProducts() {
-        viewModelScope.launch(dispatcherProvider.io) {
-            allProductJob = viewModelScope.launch {
+        allProductJob = viewModelScope.launch(dispatcherProvider.io) {
                 repository.getProductFromDB().cancellable().collect {
                     if (it.isEmpty())
                         repository.getProducts().onEach {
@@ -82,7 +86,6 @@ class ProductViewModel @Inject constructor(
                     else
                         _productResult.value = ProductResult.ProductList(it)
                 }
-            }
         }
 
     }
