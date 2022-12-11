@@ -1,37 +1,22 @@
 package com.project.tailor.utils
 
-import android.app.Activity
-import android.content.Intent
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.Velocity
 
-fun Activity.navigateToActivity(name: Class<*>?) {
-    val intent = Intent(this, name)
-    startActivity(intent)
-    finish()
+private val VerticalScrollConsumer = object : NestedScrollConnection {
+    override fun onPreScroll(available: Offset, source: NestedScrollSource) = available.copy(x = 0f)
+    override suspend fun onPreFling(available: Velocity) = available.copy(x = 0f)
 }
 
-fun Fragment.navigateUsingAction(actionDirection: Int) {
-    this.findNavController().navigate(actionDirection)
+private val HorizontalScrollConsumer = object : NestedScrollConnection {
+    override fun onPreScroll(available: Offset, source: NestedScrollSource) = available.copy(y = 0f)
+    override suspend fun onPreFling(available: Velocity) = available.copy(y = 0f)
 }
 
-fun Fragment.hideKeyboard() {
-    val imm = this.activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    //Find the currently focused view, so we can grab the correct window token from it.
-    var view = activity?.currentFocus
-    //If no view currently has focus, create a new one, just so we can grab a window token from it
-    if (view == null) {
-        view = View(activity)
-    }
-    imm.hideSoftInputFromWindow(view.windowToken, 0)
-}
+fun Modifier.disableVerticalPointerInputScroll() = this.nestedScroll(VerticalScrollConsumer)
 
-fun View.setVisible(visible: Boolean) {
-    if (visible)
-        this.visibility = View.VISIBLE
-    else
-        this.visibility = View.GONE
-
-}
+fun Modifier.disableHorizontalPointerInputScroll() = this.nestedScroll(HorizontalScrollConsumer)
