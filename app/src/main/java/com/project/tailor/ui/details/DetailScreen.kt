@@ -12,6 +12,8 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,8 +29,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.google.relay.compose.BoxScopeInstanceImpl.matchParentSize
 import com.project.tailor.ProductViewModel
 import com.project.tailor.model.Product
 import com.project.tailor.ui.home.ErrorCard
@@ -40,24 +45,22 @@ fun DetailsScreen(
     viewModel: ProductViewModel,
     context: Context,
     navController: NavHostController,
-    product: Product?
+    product: Product
 ) {
-    viewModel.getComments(product?.id)
+    viewModel.getComments(product.id)
     Surface(color = MaterialTheme.colors.background) {
-
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
         Scaffold(
             containerColor = MaterialTheme.colors.background,
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 MediumTopAppBar(
                     title = {
-                        Text(text =  product?.title.orEmpty())
+                        Text(text = product.title)
                     },
                     colors = TopAppBarDefaults.mediumTopAppBarColors(
-                        containerColor = MaterialTheme.colors.background,
-                        scrolledContainerColor = MaterialTheme.colors.onSurface
+                        containerColor = MaterialTheme.colors.secondary,
+                        scrolledContainerColor = MaterialTheme.colors.secondary
                     ),
                     scrollBehavior = scrollBehavior,
                     navigationIcon =
@@ -71,70 +74,16 @@ fun DetailsScreen(
                     },
                 )
             }
-//            topBar = {
-//                TopAppBar(
-//                    title = { Text(text = product?.title.orEmpty()) },
-//                    navigationIcon = if (navController.previousBackStackEntry != null) {
-//                        {
-//                            IconButton(onClick = { navController.navigateUp() }) {
-//                                Icon(
-//                                    imageVector = Icons.Filled.ArrowBack,
-//                                    contentDescription = "Back"
-//                                )
-//                            }
-//                        }
-//                    } else {
-//                        null
-//                    }
-//                    )
-//            }
         ) {
-//                comments(viewModel, context)
-//
-//
+
             if (product == null)
                 ErrorCard("Something went wrong")
             else
-                productDetails(product = product, viewModel = viewModel, context = context)
+                ProductDetails(product = product, viewModel = viewModel, context = context)
         }
-//        {
-//            if (product == null)
-//                ErrorCard("Something went wrong")
-//            else
-//                    ProductCard(product = product, viewModel = viewModel)
-//            Column {
-//                ProductCard(product = product, viewModel = viewModel)
-//                commentSection(product = product, viewModel = viewModel)
-//                comments(viewModel, context)
-//            }
-//        }
     }
 }
 
-@Composable
-fun productDetails(
-    product: Product,
-    viewModel: ProductViewModel,
-    context: Context
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxHeight()
-    ) {
-        Image(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(346.dp),
-            painter = rememberImagePainter(product.images[0]),
-            alignment = Alignment.CenterStart,
-            contentDescription = "",
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        commentSection(product = product, viewModel = viewModel)
-        comments(viewModel, context)
-    }
-}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -146,11 +95,11 @@ fun commentSection(product: Product, viewModel: ProductViewModel) {
         value = text,
         textStyle = TextStyle(
             fontStyle = FontStyle.Normal,
-            color = androidx.compose.material.MaterialTheme.colors.onSurface
+            color = MaterialTheme.colors.onSurface
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp, 8.dp),
+            .padding(8.dp, 8.dp),
         onValueChange = {
             text = it
         },
@@ -167,30 +116,37 @@ fun commentSection(product: Product, viewModel: ProductViewModel) {
 }
 
 @Composable
-fun comments(viewModel: ProductViewModel, context: Context) {
+fun ProductDetails(
+    product: Product,
+    viewModel: ProductViewModel, context: Context
+) {
     val comments by viewModel.commentResult.collectAsState()
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-//        modifier = Modifier
-//            .then(
-//                Modifier.disableVerticalPointerInputScroll()
-//            )
-    ) {
+    LazyColumn {
+        item {
+            ImageWithLikeIcon(
+                product, viewModel, modifier = Modifier
+                    .matchParentSize()
+                    .wrapContentHeight()
+            )
+        }
+        item {
+            commentSection(product = product, viewModel = viewModel)
+        }
         items(comments) { comment ->
             Column(
                 Modifier
-                    .padding(8.dp)
+                    .padding(16.dp)
                     .fillMaxWidth()
             ) {
                 Text(
                     text = DateFormat.getInstance().format(comment.timeStamp).toString(),
-                    fontSize = 10.sp
+                    fontSize = 11.sp
                 )
-                Row() {
+                Row {
                     Text(
                         modifier = Modifier.weight(3f),
                         text = comment.comment,
-                        fontSize = 16.sp
+                        fontSize = 18.sp
                     )
                     IconButton(
                         onClick = {
@@ -198,13 +154,55 @@ fun comments(viewModel: ProductViewModel, context: Context) {
                         },
                         modifier = Modifier
                             .weight(1f)
-                            .size(16.dp),
+                            .size(20.dp),
                     ) {
-                        Icon(imageVector = Icons.Filled.Delete, "delete")
+                        Icon(imageVector = Icons.Default.Delete, "delete")
                     }
                 }
 
             }
         }
+    }
+}
+
+@Composable
+fun ImageWithLikeIcon(
+    product: Product,
+    viewModel: ProductViewModel, modifier: Modifier
+
+) {
+    val favoriteIcon = if (product.favorite) Icons.Filled.Favorite else Icons.Default.FavoriteBorder
+    ConstraintLayout(modifier = modifier) {
+        val (icon, image) = createRefs()
+        Image(
+            painter = rememberImagePainter(product.images[0]),
+            contentDescription = "",
+            modifier = Modifier
+                .constrainAs(image) {
+                    top.linkTo(parent.top, margin = 14.dp)
+                    width = Dimension.fillToConstraints
+                }
+                .size(56.dp),
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.CenterStart,
+        )
+        IconButton(
+            onClick = {
+                viewModel.toggleFavorite(product)
+            },
+            modifier = Modifier
+                .size(25.dp)
+                .constrainAs(icon) {
+                    top.linkTo(image.top, margin = 4.dp)
+                    end.linkTo(image.end, margin = 4.dp)
+                },
+        ) {
+            Icon(
+                imageVector = favoriteIcon,
+                "favorite",
+                tint = Color.Blue
+            )
+        }
+
     }
 }
