@@ -125,8 +125,8 @@ fun ProductDetails(
         item {
             ImageWithLikeIcon(
                 product, viewModel, modifier = Modifier
-                    .matchParentSize()
-                    .wrapContentHeight()
+                    .fillMaxHeight()
+                    .fillMaxWidth()
             )
         }
         item {
@@ -169,7 +169,6 @@ fun ProductDetails(
 fun ImageWithLikeIcon(
     product: Product,
     viewModel: ProductViewModel, modifier: Modifier
-
 ) {
     val favoriteIcon = if (product.favorite) Icons.Filled.Favorite else Icons.Default.FavoriteBorder
     ConstraintLayout(modifier = modifier) {
@@ -179,10 +178,10 @@ fun ImageWithLikeIcon(
             contentDescription = "",
             modifier = Modifier
                 .constrainAs(image) {
-                    top.linkTo(parent.top, margin = 14.dp)
-                    width = Dimension.fillToConstraints
-                }
-                .size(56.dp),
+                    top.linkTo(parent.top)
+                    width = Dimension.matchParent
+                    height = Dimension.value(250.dp)
+                },
             contentScale = ContentScale.Crop,
             alignment = Alignment.CenterStart,
         )
@@ -193,14 +192,14 @@ fun ImageWithLikeIcon(
             modifier = Modifier
                 .size(25.dp)
                 .constrainAs(icon) {
-                    top.linkTo(image.top, margin = 4.dp)
-                    end.linkTo(image.end, margin = 4.dp)
+                    top.linkTo(image.top, margin = 8.dp)
+                    end.linkTo(image.end, margin = 8.dp)
                 },
         ) {
             Icon(
                 imageVector = favoriteIcon,
                 "favorite",
-                tint = Color.Blue
+                tint = Color.Red
             )
         }
 

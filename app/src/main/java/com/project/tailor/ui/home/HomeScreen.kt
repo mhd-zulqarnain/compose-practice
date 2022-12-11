@@ -12,10 +12,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ProvideTextStyle
@@ -245,7 +242,7 @@ fun ProductCard(
     if (showDialog.value) {
         showDialog(
             product.images[(0 until (product.images.size)).random()],
-            product.title.orEmpty(),
+            product.title,
             product.description.orEmpty(),
             "Ok", "cancel", {
                 showDialog.value = false
@@ -257,7 +254,6 @@ fun ProductCard(
         modifier = Modifier
             .padding(16.dp, 8.dp)
             .clickable(onClick = {
-//                showDialog.value = true
                 navController?.let {
                     viewModel.setProductDetails(product)
                     navController.navigate(Screen.Details.toString())
@@ -283,19 +279,37 @@ fun ProductCard(
                     contentScale = ContentScale.Crop
                 )
             }
-            IconButton(
-                onClick = {
-                    viewModel.toggleFavorite(product)
-                },
-                modifier = Modifier
-                    .size(25.dp),
-            ) {
-                Icon(
-                    imageVector = favoriteIcon,
-                    "favorite",
-                    tint = Color.Blue
-                )
+            Row {
+                IconButton(
+                    onClick = {
+                        viewModel.toggleFavorite(product)
+                    },
+                    modifier = Modifier
+                        .size(25.dp)
+                ) {
+                    Icon(
+                        imageVector = favoriteIcon,
+                        "favorite",
+                        tint = MaterialTheme.colors.primaryVariant
+                    )
+                }
+                Spacer(modifier = Modifier.width(5.dp))
+                IconButton(
+                    onClick = {
+                        showDialog.value = true
+
+                    },
+                    modifier = Modifier
+                        .size(25.dp),
+                ) {
+                    Icon(
+                        imageVector =  Icons.Default.Share,
+                        "favorite",
+                        tint = MaterialTheme.colors.primaryVariant
+                    )
+                }
             }
+
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
