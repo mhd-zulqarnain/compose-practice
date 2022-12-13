@@ -33,7 +33,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.google.relay.compose.BoxScopeInstanceImpl.matchParentSize
 import com.project.tailor.ProductViewModel
 import com.project.tailor.model.Product
 import com.project.tailor.ui.home.ErrorCard
@@ -91,28 +90,37 @@ fun commentSection(product: Product, viewModel: ProductViewModel) {
 
     var text by rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
-    OutlinedTextField(
-        value = text,
-        textStyle = TextStyle(
-            fontStyle = FontStyle.Normal,
-            color = MaterialTheme.colors.onSurface
-        ),
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp, 8.dp),
-        onValueChange = {
-            text = it
-        },
-        keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(onDone = {
-            if (text.isNotBlank())
-                viewModel.addComment(text, product.id)
-            text = ""
-            keyboardController?.hide()
-        }),
-        label = { Text("Enter your comment", color = Color.LightGray) })
+            .padding(8.dp, 8.dp)
+    ) {
+        Text(text = product.description.orEmpty(), fontSize = 16.sp, maxLines = 4)
+
+        OutlinedTextField(
+            value = text,
+            textStyle = TextStyle(
+                fontStyle = FontStyle.Normal,
+                color = MaterialTheme.colors.onSurface
+            ),
+            modifier = Modifier
+                .fillMaxWidth(),
+            onValueChange = {
+                text = it
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                if (text.isNotBlank())
+                    viewModel.addComment(text, product.id)
+                text = ""
+                keyboardController?.hide()
+            }),
+            label = { Text("Enter your comment", color = Color.LightGray) })
+    }
+
 }
 
 @Composable
