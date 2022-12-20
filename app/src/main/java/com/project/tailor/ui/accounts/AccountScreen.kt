@@ -2,7 +2,7 @@ package com.project.tailor.ui.accounts
 
 import android.content.Context
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Text
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 

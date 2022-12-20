@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -35,6 +34,7 @@ import coil.compose.rememberImagePainter
 import com.project.tailor.ProductViewModel
 import com.project.tailor.model.Product
 import java.text.DateFormat
+import androidx.compose.material.Text
 
 @Composable
 fun ProductDetails(
