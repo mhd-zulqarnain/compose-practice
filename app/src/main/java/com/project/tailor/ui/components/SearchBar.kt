@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HomeSearch(
+     topBarVisibility: Boolean,
     searchInput: String = "", onSearchInputChanged: (String) -> Unit, onFilter: (Boolean) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -48,10 +49,10 @@ fun HomeSearch(
             modifier = Modifier.padding(horizontal = 9.dp)
         ) {
             IconButton(onClick = {
-//                    focusRequester.requestFocus()
+//                topBarVisibility = true
             }) {
                 Icon(
-                    imageVector = Icons.Filled.Search, contentDescription = ""
+                    imageVector = Icons.Filled.ArrowBack, contentDescription = ""
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -84,40 +85,47 @@ fun HomeSearch(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            Box {
-                var mDisplayMenu by remember { mutableStateOf(false) }
-                var filter by remember { mutableStateOf(false) }
-                IconButton(onClick = { mDisplayMenu = !mDisplayMenu }) {
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = "stringResource(R.string.cd_more_actions)"
-                    )
-                }
-                // Creating a dropdown menu
-                DropdownMenu(expanded = mDisplayMenu, onDismissRequest = { mDisplayMenu = false }) {
-
-                    DropdownMenuItem(onClick = { }) {
-                        Row(verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickable {
-                                filter = !filter
-                                onFilter(filter)
-                            }) {
-                            Checkbox(checked = filter, onCheckedChange = {
-                                filter = !filter
-                                onFilter(filter)
-                            })
-                            Text(text = "Filter by favorite")
-                        }
-                    }
-                    Text(text = "clear Filter",
-                        Modifier
-                            .padding(65.dp, 0.dp)
-                            .clickable {
-                                filter = false
-                                onSearchInputChanged("")
-                            })
-                }
+            IconButton(onClick = {
+//                    focusRequester.requestFocus()
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Search, contentDescription = ""
+                )
             }
+//            Box {
+//                var mDisplayMenu by remember { mutableStateOf(false) }
+//                var filter by remember { mutableStateOf(false) }
+//                IconButton(onClick = { mDisplayMenu = !mDisplayMenu }) {
+//                    Icon(
+//                        imageVector = Icons.Filled.MoreVert,
+//                        contentDescription = "stringResource(R.string.cd_more_actions)"
+//                    )
+//                }
+//                // Creating a dropdown menu
+//                DropdownMenu(expanded = mDisplayMenu, onDismissRequest = { mDisplayMenu = false }) {
+//
+//                    DropdownMenuItem(onClick = { }) {
+//                        Row(verticalAlignment = Alignment.CenterVertically,
+//                            modifier = Modifier.clickable {
+//                                filter = !filter
+//                                onFilter(filter)
+//                            }) {
+//                            Checkbox(checked = filter, onCheckedChange = {
+//                                filter = !filter
+//                                onFilter(filter)
+//                            })
+//                            Text(text = "Filter by favorite")
+//                        }
+//                    }
+//                    Text(text = "clear Filter",
+//                        Modifier
+//                            .padding(65.dp, 0.dp)
+//                            .clickable {
+//                                filter = false
+//                                onSearchInputChanged("")
+//                            })
+//                }
+//            }
         }
 
     }

@@ -1,5 +1,6 @@
 package com.project.tailor.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,38 +9,72 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.project.tailor.ProductViewModel
 
 @Composable
 fun AppTopBar(
-    navIconClick: () -> Unit
+    viewModel: ProductViewModel, navIconClick: () -> Unit
 ) {
-    TopAppBar(
-        title = {
-            Text(text = "top bar", style = TextStyle(color = MaterialTheme.colors.onPrimary))
-        },
-        backgroundColor = MaterialTheme.colors.primary,
-        navigationIcon = {
-            IconButton(onClick = navIconClick) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "")
+    var visible by remember {
+        mutableStateOf(true)
+    }
+    AnimatedVisibility(visible = visible) {
+        TopAppBar(title = {
+            Text(
+                text = "Home",
+                style = TextStyle(color = MaterialTheme.colors.onPrimary),
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }, backgroundColor = MaterialTheme.colors.primary, navigationIcon = {
+            Row {
+                IconButton(onClick = navIconClick) {
+                    Icon(imageVector = Icons.Default.Menu, contentDescription = "")
+                }
             }
-        }
-    )
 
+        }, actions = {
+            Box(contentAlignment = Alignment.Center) {
+                IconButton(onClick = {
+                    visible = false
+                }) {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "")
+                }
+            }
+        })
+    }
+
+    AnimatedVisibility(visible = !visible) {
+        HomeSearch(topBarVisibility= visible , searchInput = "", onSearchInputChanged = {
+            viewModel.filterProducts(it)
+        }, {
+            viewModel.filterProducts("", it)
+        })
+    }
 }
 
 @Composable
 fun DrawerHeader() {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .background(color = MaterialTheme.colors.secondary)
-        .padding(64.dp)) {
-        Text(text = "The drawer header ", style = TextStyle(fontSize = 20.sp , color = MaterialTheme.colors.onSecondary))
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colors.secondary)
+            .padding(64.dp)
+    ) {
+        Text(
+            text = "The drawer header ",
+            style = TextStyle(fontSize = 20.sp, color = MaterialTheme.colors.onSecondary)
+        )
     }
 }
 
@@ -65,7 +100,5 @@ fun DrawerBody(
 
 
 data class MenuItems(
-    var id: String,
-    var icon: ImageVector,
-    var title: String = ""
+    var id: String, var icon: ImageVector, var title: String = ""
 )

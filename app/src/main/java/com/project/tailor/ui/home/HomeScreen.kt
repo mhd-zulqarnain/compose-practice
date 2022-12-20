@@ -31,7 +31,7 @@ fun HomeScreen(viewModel: ProductViewModel, context: Context, navController: Nav
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
-                AppTopBar(navIconClick = {
+                AppTopBar(viewModel ,navIconClick = {
                     scope.launch {
                         scaffoldState.drawerState.open()
                     }
