@@ -24,6 +24,10 @@ class ProductLocalDataSource @Inject constructor(
         return productDao.getAll()
     }
 
+    fun filterProduct(param :String): Flow<List<Product>> {
+        return productDao.filterProduct(param)
+    }
+
 //    fun getProductsWithComments(): List<Product> {
 //        val data = productDao.getProductsWithComments()
 //        val map: ArrayList<Product> = arrayListOf()

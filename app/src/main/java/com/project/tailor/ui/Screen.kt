@@ -10,4 +10,9 @@ sealed class Screen(val route: String) {
             return "details"
         }
     }
+    object Account: Screen("Account"){
+        override fun toString(): String {
+            return "account"
+        }
+    }
 }
