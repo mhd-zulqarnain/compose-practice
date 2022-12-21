@@ -34,7 +34,7 @@ fun DetailsScreen(
                         Text(text = product.title)
                     },
                     colors = TopAppBarDefaults.mediumTopAppBarColors(
-                        containerColor = MaterialTheme.colors.secondary,
+                        containerColor = MaterialTheme.colors.primary,
                         scrolledContainerColor = MaterialTheme.colors.secondary
                     ),
                     scrollBehavior = scrollBehavior,

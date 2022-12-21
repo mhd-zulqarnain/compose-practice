@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.project.tailor.ProductViewModel
+import com.project.tailor.ui.Screen
 
 @Composable
 fun AppTopBar(
@@ -53,12 +54,13 @@ fun AppTopBar(
             }
         })
     }
-
     AnimatedVisibility(visible = !visible) {
-        HomeSearch(topBarVisibility= visible , searchInput = "", onSearchInputChanged = {
+        HomeSearch(searchInput = "", onSearchInputChanged = {
             viewModel.filterProducts(it)
         }, {
             viewModel.filterProducts("", it)
+        }, { onBackPress ->
+            visible = onBackPress
         })
     }
 }
@@ -100,5 +102,5 @@ fun DrawerBody(
 
 
 data class MenuItems(
-    var id: String, var icon: ImageVector, var title: String = ""
+    var screen: Screen, var icon: ImageVector, var title: String = ""
 )

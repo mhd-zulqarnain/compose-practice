@@ -19,8 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.project.tailor.ProductViewModel
+import com.project.tailor.ui.Screen
 import com.project.tailor.ui.components.*
 import kotlinx.coroutines.launch
+import javax.annotation.meta.When
 
 
 @Composable
@@ -31,7 +33,7 @@ fun HomeScreen(viewModel: ProductViewModel, context: Context, navController: Nav
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
-                AppTopBar(viewModel ,navIconClick = {
+                AppTopBar(viewModel, navIconClick = {
                     scope.launch {
                         scaffoldState.drawerState.open()
                     }
@@ -39,21 +41,27 @@ fun HomeScreen(viewModel: ProductViewModel, context: Context, navController: Nav
             }, drawerContent = {
                 DrawerHeader()
                 DrawerBody(items = listOf(
-                    MenuItems("home", Icons.Default.Home, "Home"),
-                    MenuItems("accounts", Icons.Default.Person, "Accounts")
+//                    MenuItems(Screen.Home, Icons.Default.Home, "Home"),
+                    MenuItems(Screen.Account, Icons.Default.Person, "Accounts")
                 ), onClickItem = {
+
+                    when (it.screen) {
+                        Screen.Home -> {
+                            navController.navigate(Screen.Details.toString())
+                        }
+                        Screen.Account -> {
+                            navController.navigate(Screen.Account.toString())
+                        }
+                        else->{
+                            //not required
+                        }
+                    }
                     println("clicked ${it.title}")
                 })
             }) {
             val productUIState by viewModel.productResult.collectAsState()
             ProductList(productUIState = productUIState, context, viewModel, navController)
         }
-//        HomeSearch(searchInput = "", onSearchInputChanged = {
-//            viewModel.filterProducts(it)
-//        }, {
-//            viewModel.filterProducts("", it)
-//        })
-
     }
 
 }

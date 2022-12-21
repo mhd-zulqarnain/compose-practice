@@ -1,5 +1,6 @@
 package com.project.tailor.ui.components
 
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,8 +32,10 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HomeSearch(
-     topBarVisibility: Boolean,
-    searchInput: String = "", onSearchInputChanged: (String) -> Unit, onFilter: (Boolean) -> Unit
+    searchInput: String = "",
+    onSearchInputChanged: (String) -> Unit,
+    onFilter: (Boolean) -> Unit,
+    onBackPressedCallback: (Boolean)->Unit
 ) {
     val focusRequester = remember { FocusRequester() }
 
@@ -49,6 +52,7 @@ fun HomeSearch(
             modifier = Modifier.padding(horizontal = 9.dp)
         ) {
             IconButton(onClick = {
+                onBackPressedCallback(true)
 //                topBarVisibility = true
             }) {
                 Icon(
