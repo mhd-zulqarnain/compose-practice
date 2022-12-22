@@ -2,6 +2,7 @@ package com.project.tailor.ui.components
 
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -47,6 +48,7 @@ fun ProductDetails(
         item {
             ImageWithLikeIcon(
                 product, viewModel, modifier = Modifier
+                    .background(color = MaterialTheme.colors.primary)
                     .fillMaxHeight()
                     .fillMaxWidth()
             )
@@ -106,7 +108,7 @@ fun commentSection(product: Product, viewModel: ProductViewModel) {
             value = text,
             textStyle = TextStyle(
                 fontStyle = FontStyle.Normal,
-                color = MaterialTheme.colors.onSurface
+                color = MaterialTheme.colors.surface
             ),
             modifier = Modifier
                 .fillMaxWidth(),
@@ -136,18 +138,23 @@ fun ImageWithLikeIcon(
     val favoriteIcon = if (product.favorite) Icons.Filled.Favorite else Icons.Default.FavoriteBorder
     ConstraintLayout(modifier = modifier) {
         val (icon, image) = createRefs()
-        Image(
-            painter = rememberImagePainter(product.images[0]),
-            contentDescription = "",
+        Box(
             modifier = Modifier
+                .padding(65.dp)
                 .constrainAs(image) {
                     top.linkTo(parent.top)
                     width = Dimension.matchParent
                     height = Dimension.value(250.dp)
                 },
-            contentScale = ContentScale.Crop,
-            alignment = Alignment.CenterStart,
-        )
+        ) {
+            Image(
+                painter = rememberImagePainter(product.images[0]),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center,
+            )
+        }
+
         IconButton(
             onClick = {
                 viewModel.toggleFavorite(product)
