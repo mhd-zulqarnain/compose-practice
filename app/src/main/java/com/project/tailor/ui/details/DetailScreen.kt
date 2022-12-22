@@ -31,11 +31,12 @@ fun DetailsScreen(
             topBar = {
                 MediumTopAppBar(
                     title = {
-                        Text(text = product.title)
+                        Text(text = product.title )
                     },
                     colors = TopAppBarDefaults.mediumTopAppBarColors(
-                        containerColor = MaterialTheme.colors.secondary,
-                        scrolledContainerColor = MaterialTheme.colors.secondary
+                        containerColor = MaterialTheme.colors.primary,
+                        scrolledContainerColor = MaterialTheme.colors.surface,
+                        titleContentColor = MaterialTheme.colors.surface
                     ),
                     scrollBehavior = scrollBehavior,
                     navigationIcon =
@@ -43,7 +44,8 @@ fun DetailsScreen(
                         IconButton(onClick = { navController.navigateUp() }) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = "Back"
+                                contentDescription = "Back",
+                                tint  = MaterialTheme.colors.surface
                             )
                         }
                     },
