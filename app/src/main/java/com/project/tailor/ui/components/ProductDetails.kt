@@ -3,11 +3,15 @@ package com.project.tailor.ui.components
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
@@ -36,6 +40,7 @@ import com.project.tailor.ProductViewModel
 import com.project.tailor.model.Product
 import java.text.DateFormat
 import androidx.compose.material.Text
+import androidx.compose.ui.draw.clip
 
 @Composable
 fun ProductDetails(
@@ -44,7 +49,7 @@ fun ProductDetails(
     context: Context
 ) {
     val comments by viewModel.commentResult.collectAsState()
-    LazyColumn {
+    LazyColumn(modifier = Modifier.background(color = MaterialTheme.colors.surface)) {
         item {
             ImageWithLikeIcon(
                 product, viewModel, modifier = Modifier
@@ -64,13 +69,15 @@ fun ProductDetails(
             ) {
                 Text(
                     text = DateFormat.getInstance().format(comment.timeStamp).toString(),
-                    fontSize = 11.sp
+                    fontSize = 11.sp,
+                    style = TextStyle(color = MaterialTheme.colors.onSurface)
                 )
                 Row {
                     Text(
                         modifier = Modifier.weight(3f),
                         text = comment.comment,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        style = TextStyle(color = MaterialTheme.colors.onSurface)
                     )
                     IconButton(
                         onClick = {
@@ -80,7 +87,7 @@ fun ProductDetails(
                             .weight(1f)
                             .size(20.dp),
                     ) {
-                        Icon(imageVector = Icons.Default.Delete, "delete")
+                        Icon(imageVector = Icons.Default.Delete, "delete" , tint =MaterialTheme.colors.onSurface)
                     }
                 }
 
@@ -100,10 +107,9 @@ fun commentSection(product: Product, viewModel: ProductViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp, 8.dp)
+            .padding(16.dp, 16.dp)
     ) {
         Text(text = product.description.orEmpty(), fontSize = 16.sp, maxLines = 4)
-
         OutlinedTextField(
             value = text,
             textStyle = TextStyle(
@@ -124,7 +130,13 @@ fun commentSection(product: Product, viewModel: ProductViewModel) {
                 text = ""
                 keyboardController?.hide()
             }),
-            label = { Text("Enter your comment", color = Color.LightGray) })
+            label = {
+                Text(
+                    "Enter your comment",
+                    color = Color.LightGray,
+                    style = TextStyle(color = MaterialTheme.colors.onSurface)
+                )
+            })
     }
 
 }
@@ -136,41 +148,51 @@ fun ImageWithLikeIcon(
     viewModel: ProductViewModel, modifier: Modifier
 ) {
     val favoriteIcon = if (product.favorite) Icons.Filled.Favorite else Icons.Default.FavoriteBorder
-    ConstraintLayout(modifier = modifier) {
-        val (icon, image) = createRefs()
-        Box(
-            modifier = Modifier
-                .padding(65.dp)
-                .constrainAs(image) {
-                    top.linkTo(parent.top)
-                    width = Dimension.matchParent
-                    height = Dimension.value(250.dp)
-                },
-        ) {
-            Image(
-                painter = rememberImagePainter(product.images[0]),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center,
-            )
-        }
+    Card(
+        elevation = 1.dp,
+        shape = RoundedCornerShape(0.dp, 0.dp, 60.dp, 60.dp)
+    ) {
+        ConstraintLayout(modifier = modifier) {
+            val (icon, image) = createRefs()
+            Box(
+                modifier = Modifier
+                    .padding(65.dp)
+                    .constrainAs(image) {
+                        top.linkTo(parent.top)
+                        width = Dimension.matchParent
+                        height = Dimension.value(350.dp)
+                    },
+            ) {
+                Image(
+                    painter = rememberImagePainter(product.images[0]),
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,            // crop the image if it's not a square
+                    modifier = Modifier
+                        .size(350.dp)
+                        .clip(CircleShape)                       // clip to the circle shape
+                        .border(2.dp, Color.White, CircleShape),
+                    alignment = Alignment.Center,
+                )
+            }
 
-        IconButton(
-            onClick = {
-                viewModel.toggleFavorite(product)
-            },
-            modifier = Modifier
-                .size(25.dp)
-                .constrainAs(icon) {
-                    top.linkTo(image.top, margin = 8.dp)
-                    end.linkTo(image.end, margin = 8.dp)
+            IconButton(
+                onClick = {
+                    viewModel.toggleFavorite(product)
                 },
-        ) {
-            Icon(
-                imageVector = favoriteIcon,
-                "favorite",
-                tint = Color.Red
-            )
+                modifier = Modifier
+                    .size(25.dp)
+                    .constrainAs(icon) {
+                        top.linkTo(image.top, margin = 8.dp)
+                        end.linkTo(image.end, margin = 8.dp)
+                    },
+            ) {
+                Icon(
+                    imageVector = favoriteIcon,
+                    "favorite",
+                    tint = Color.Red
+                )
+            }
+
         }
 
     }

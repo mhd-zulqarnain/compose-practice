@@ -44,7 +44,10 @@ fun HomeScreen(viewModel: ProductViewModel, context: Context, navController: Nav
 //                    MenuItems(Screen.Home, Icons.Default.Home, "Home"),
                     MenuItems(Screen.Account, Icons.Default.Person, "Accounts")
                 ), onClickItem = {
-
+                    //close drawer
+                    scope.launch {
+                        scaffoldState.drawerState.close()
+                    }
                     when (it.screen) {
                         Screen.Home -> {
                             navController.navigate(Screen.Details.toString())

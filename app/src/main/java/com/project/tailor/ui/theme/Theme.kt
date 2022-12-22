@@ -6,6 +6,7 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.project.tailor.model.ThemeState
 
 private val ERROR = Color(0xFFCF6679)
 val ANSWER_FOUND = Color(0xFF9FC587)
@@ -33,7 +34,7 @@ fun TailorTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable() () -> Unit
 ) {
-    val colors = if (!useDarkTheme) {
+    val colors = if (ThemeState.isLight) {
         LightColors
     } else {
         DarkColors

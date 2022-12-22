@@ -3,10 +3,7 @@ package com.project.tailor.ui.components
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -22,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.project.tailor.ProductViewModel
+import com.project.tailor.model.ThemeState
 
 @Composable
 fun AppTopBar(
@@ -29,6 +27,7 @@ fun AppTopBar(
 ) {
     var mDisplayMenu by remember { mutableStateOf(false) }
     var filter by remember { mutableStateOf(false) }
+    var darkTheme by remember { mutableStateOf(false) }
     var visible by remember {
         mutableStateOf(true)
     }
@@ -46,7 +45,8 @@ fun AppTopBar(
                 IconButton(onClick = navIconClick) {
                     Icon(
                         imageVector = Icons.Default.Menu,
-                        contentDescription = ""
+                        contentDescription = "",
+                        tint  = MaterialTheme.colors.surface
                     )
                 }
             }
@@ -60,7 +60,8 @@ fun AppTopBar(
                     }) {
                         Icon(
                             imageVector = Icons.Default.Search,
-                            contentDescription = ""
+                            contentDescription = "",
+                            tint  = MaterialTheme.colors.surface
                         )
                     }
                     IconButton(onClick = {
@@ -70,46 +71,52 @@ fun AppTopBar(
                             //filter drop down menu
                             Icon(
                                 imageVector = Icons.Filled.MoreVert,
-                                contentDescription = ""
+                                contentDescription = "",
+                                tint  = MaterialTheme.colors.surface
                             )
                             DropdownMenu(
                                 expanded = mDisplayMenu,
                                 onDismissRequest = { mDisplayMenu = false }) {
                                 DropdownMenuItem(onClick = { }) {
-                                    Row(verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.clickable {
-                                            filter = !filter
-                                            viewModel.filterProducts("", filter = filter)
+                                    Column {
+                                        Row(verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.clickable {
+                                                filter = !filter
+                                                viewModel.filterProducts("", filter = filter)
 
-                                        }) {
-                                        Checkbox(checked = filter, onCheckedChange = {
-                                            filter = !filter
-                                            viewModel.filterProducts("", filter = filter)
-                                        })
-                                        Text(text = "Filter by favorite")
-                                    }
-                                }
-//                                Row(
-//                                    verticalAlignment = Alignment.CenterVertically,
-//                                    modifier = Modifier.clickable {}
-//                                ) {
-//                                    Checkbox(checked = filter, onCheckedChange = {
-//                                        //Todo :change theme
-//                                    })
-//                                    Text(text = "Dark theme")
-//                                }
-                                Row(verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.clickable {
-                                        filter = false
-                                        viewModel.filterProducts("")
-                                    }) {
-                                    Text(text = "Clear Filter",
-                                        Modifier
-                                            .padding(65.dp, 0.dp)
+                                            }) {
+                                            Checkbox(checked = filter, onCheckedChange = {
+                                                filter = !filter
+                                                viewModel.filterProducts("", filter = filter)
+                                            })
+                                            Text(text = "Filter by favorite")
+                                        }
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
+                                            Checkbox(checked = darkTheme, onCheckedChange = {
+                                                darkTheme = !darkTheme
+                                                ThemeState.isLight =!darkTheme
+                                            })
+                                            Text(text = "Dark theme")
+                                        }
+                                        Row(verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.clickable {
+                                                filter = false
+                                                viewModel.filterProducts("")
+                                            }) {
+                                            Text(
+                                                text = "Clear Filter",
+                                                Modifier
+                                                    .padding(65.dp, 10.dp),
+                                                style = TextStyle(color = MaterialTheme.colors.error)
                                             )
-                                }
-                            }
+                                        }
+                                    }
 
+                                }
+
+                            }
                         }
                     }
                 }
