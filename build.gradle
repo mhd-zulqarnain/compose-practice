@@ -90,11 +90,9 @@ plugins {
 
 ext {
     // query git for the commit count to automate versioning.
-//    gitCommitCount = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
-    gitCommitCount = 100
+    gitCommitCount = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
 
-//    gitCommitCountLastRelease = Integer.parseInt('git rev-list --count v1.0.0'.execute([], project.rootDir).text.trim())
-    gitCommitCountLastRelease = 1
+    gitCommitCountLastRelease = Integer.parseInt('git rev-list --count v1.0.0'.execute([], project.rootDir).text.trim())
 
     gitCommitsForThisRelease = gitCommitCount - gitCommitCountLastRelease
 }
