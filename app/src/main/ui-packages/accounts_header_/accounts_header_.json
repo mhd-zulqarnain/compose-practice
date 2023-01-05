@@ -5,7 +5,7 @@
     "type": "figma",
     "file": "VbpclrZVopPGwHU1rvAS9P",
     "node": "104:30",
-    "version": "2830389071",
+    "version": "2830500871",
     "component-id": "0302c85dd152a1fcc7ca16590931b5df74a2a267"
   },
   "default": "AccountsHeader ",
@@ -114,20 +114,24 @@
           },
           {
             "id": "tvTitle",
-            "margin": {
-              "left": "8.0",
-              "top": "3.0",
-              "right": "189.449462890625",
-              "bottom": "60.897705078125"
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "8.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "3.0"
+              }
             },
             "size-constraints": {
               "width-constraints": {
-                "sizing-mode": "proportional",
-                "value": "1.0"
+                "sizing-mode": "fixed",
+                "value": "208.550537109375"
               },
               "height-constraints": {
-                "sizing-mode": "proportional",
-                "value": "1.0"
+                "sizing-mode": "fixed",
+                "value": "50.102294921875"
               }
             },
             "color": {

@@ -27,7 +27,7 @@ fun AppTopBar(
 ) {
     var mDisplayMenu by remember { mutableStateOf(false) }
     var filter by remember { mutableStateOf(false) }
-    var darkTheme by remember { mutableStateOf(false) }
+    var darkTheme by remember { mutableStateOf(!ThemeState.isLight) }
     var visible by remember {
         mutableStateOf(true)
     }
