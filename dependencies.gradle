@@ -40,13 +40,24 @@ ext {
             composeActivity    : "androidx.activity:activity-compose:${versions.compose}",
             stetho             : "com.facebook.stetho:stetho:${versions.stetho}",
             nav_version        : "androidx.navigation:navigation-compose:${versions.nav_version}",
-            constraintlayout :  "androidx.constraintlayout:constraintlayout-compose:${versions.constraintlayout}"
+            constraintlayout   : "androidx.constraintlayout:constraintlayout-compose:${versions.constraintlayout}"
 
     ]
-    //Compiler dependencies
     kaptDependencies = [
             hiltAndroidCompiler: "com.google.dagger:hilt-android-compiler:$hilt_version",
             hiltCompiler       : "androidx.hilt:hilt-compiler:$hilt_jetpack_version",
             roomCompiler       : "androidx.room:room-compiler:$room_version",
+    ]
+    testDependencies = [
+            tooling : "androidx.compose.ui:ui-tooling:${versions.compose}",
+            manifest: "androidx.compose.ui:ui-test-manifest:${versions.compose}",
+    ]
+    androidTestDependencies = [
+            test_junit4    : "androidx.compose.ui:ui-test-junit4:${versions.compose}",
+            compose_version: "androidx.test.espresso:espresso-core:3.5.0",
+            hilt_test      : "com.google.dagger:hilt-android-testing:2.44",
+    ]
+    kaptAndroidTest = [
+            test_junit4: "com.google.dagger:hilt-android-compiler:2.44"
     ]
 }

@@ -1,0 +1,185 @@
+{
+  "name": "accounts_header_",
+  "version": 32,
+  "source-key": {
+    "type": "figma",
+    "file": "VbpclrZVopPGwHU1rvAS9P",
+    "node": "104:30",
+    "version": "2830389071",
+    "component-id": "0302c85dd152a1fcc7ca16590931b5df74a2a267"
+  },
+  "default": "AccountsHeader ",
+  "design": {
+    "atoms": [
+      {
+        "type": "group",
+        "id": "top_level",
+        "root": "true"
+      },
+      {
+        "type": "vector",
+        "id": "parent"
+      },
+      {
+        "type": "vector",
+        "id": "Vector 1"
+      },
+      {
+        "type": "text",
+        "id": "tvDes"
+      },
+      {
+        "type": "text",
+        "id": "tvTitle"
+      }
+    ],
+    "modes": {
+      "AccountsHeader ": {
+        "rules": [
+          {
+            "id": "top_level",
+            "is-structured": "false",
+            "children": [
+              "parent",
+              "Vector 1",
+              "tvDes",
+              "tvTitle"
+            ],
+            "background-color": "$bgAccountsHeader",
+            "clip-content": "false"
+          },
+          {
+            "id": "parent",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "parent.svg"
+          },
+          {
+            "id": "Vector 1",
+            "margin": {
+              "left": "168.0"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "vector_1.svg"
+          },
+          {
+            "id": "tvDes",
+            "margin": {
+              "left": "14.0",
+              "top": "70.0",
+              "right": "166.486083984375",
+              "bottom": "3.532958984375"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.11764705882352941",
+              "value": "0.06666666666666667"
+            },
+            "text-content": "$tvDes",
+            "overflow": "visible",
+            "max-lines": "-1",
+            "text-align": "left",
+            "text-align-vertical": "center",
+            "text-size": "12.0",
+            "line-height": "1.219000021616618",
+            "typeface": "Montserrat"
+          },
+          {
+            "id": "tvTitle",
+            "margin": {
+              "left": "8.0",
+              "top": "3.0",
+              "right": "189.449462890625",
+              "bottom": "60.897705078125"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.03125",
+              "value": "0.12549019607843137"
+            },
+            "text-content": "$tvTitle",
+            "overflow": "visible",
+            "max-lines": "-1",
+            "text-align": "left",
+            "text-size": "36.0",
+            "line-height": "1.2189999686347113",
+            "typeface": "Montserrat"
+          }
+        ]
+      }
+    }
+  },
+  "parameters": {
+    "bgAccountsHeader": {
+      "data-type": "color",
+      "required": false,
+      "description": ""
+    },
+    "tvDes": {
+      "data-type": "text",
+      "required": false,
+      "description": "Description"
+    },
+    "tvTitle": {
+      "data-type": "text",
+      "required": false,
+      "description": "The Title"
+    }
+  },
+  "previews": [
+    {
+      "design": "AccountsHeader ",
+      "size": {
+        "width": 406.0,
+        "height": 114.0
+      },
+      "parameters": {
+        "bgAccountsHeader": {},
+        "tvDes": "Application\nFor Testing Relay,  world",
+        "tvTitle": "PlayerBox"
+      }
+    }
+  ],
+  "adin-component-search-paths": [],
+  "image-search-paths": [],
+  "vector-search-paths": []
+}
