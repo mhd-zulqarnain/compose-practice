@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.tailor.api.Result
-import com.project.tailor.data.products.ProductsRepository
+import com.project.tailor.data.products.ProductsRepositoryImp
 import com.project.tailor.di.CoroutinesDispatcherProvider
 import com.project.tailor.model.Comment
 import com.project.tailor.model.Product
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
-    private val repository: ProductsRepository,
+    private val repository: ProductsRepositoryImp,
     private val dispatcherProvider: CoroutinesDispatcherProvider,
 
     ) : ViewModel() {
